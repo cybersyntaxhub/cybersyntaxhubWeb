@@ -1,0 +1,74 @@
+{
+  "name": "AppUser",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "full_name": {
+      "type": "string"
+    },
+    "passcode": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "student",
+        "mentor"
+      ],
+      "default": "student"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "resume_url": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "CyberSecurity",
+          "BioTech",
+          "Finance",
+          "Data Science"
+        ]
+      }
+    },
+    "experience_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ]
+    },
+    "goals": {
+      "type": "string"
+    },
+    "linkedin_url": {
+      "type": "string"
+    },
+    "github_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "email",
+    "full_name",
+    "passcode",
+    "role"
+  ]
+}
