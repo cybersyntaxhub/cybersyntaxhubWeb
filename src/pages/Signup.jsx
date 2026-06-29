@@ -9,12 +9,24 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 import { base44 } from '@/api/base44Client';
-import { Zap, GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle } from 'lucide-react';
+import { Zap, GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const EDUCATOR_KEY = 'CYBERSYNTAX2025';
 
 const interestOptions = ['CyberSecurity', 'BioTech', 'Finance', 'Data Science'];
+
+// Map Google Form interest strings to our internal values
+const mapInterest = (raw) => {
+  if (!raw) return [];
+  const str = typeof raw === 'string' ? raw : String(raw);
+  const mapped = [];
+  if (/cyber/i.test(str)) mapped.push('CyberSecurity');
+  if (/bio/i.test(str)) mapped.push('BioTech');
+  if (/finance/i.test(str)) mapped.push('Finance');
+  if (/data/i.test(str)) mapped.push('Data Science');
+  return mapped;
+};
 
 export default function Signup() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -30,9 +42,33 @@ export default function Signup() {
   const [resumeFile, setResumeFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [prefilled, setPrefilled] = useState(false);
   const { signup } = useAppAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  const checkFormSubmission = async (email) => {
+    try {
+      const submissions = await base44.entities.FormSubmission.filter({ email });
+      if (submissions.length > 0) {
+        const sub = submissions[0];
+        const mappedInterests = mapInterest(sub.interests);
+        setFormData(prev => ({
+          ...prev,
+          full_name: sub.full_name || prev.full_name,
+          bio: sub.bio || prev.bio,
+          goals: sub.goals || prev.goals,
+          linkedin_url: sub.linkedin_url || prev.linkedin_url,
+          interests: mappedInterests.length > 0 ? mappedInterests : prev.interests,
+        }));
+        setPrefilled(true);
+        toast({ title: 'Application found!', description: 'We pre-filled your profile from your Google Form submission.' });
+      }
+    } catch (e) {
+      // Silently continue — no form submission found
+      console.log('No form submission found for', email);
+    }
+  };
 
   const update = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
 
@@ -101,9 +137,7 @@ export default function Signup() {
         className="w-full max-w-lg"
       >
         <Link to="/" className="flex items-center gap-2 mb-8 justify-center">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center">
-            <Zap className="w-5 h-5 text-black" />
-          </div>
+          <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
           <span className="text-lg font-bold">CyberSyntax<span className="text-cyan-400">Hub</span></span>
         </Link>
 
@@ -180,11 +214,14 @@ export default function Signup() {
                 <Button
                   className="w-full mt-6 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
                   disabled={!formData.full_name || !formData.email || !formData.passcode || !formData.confirm_passcode}
-                  onClick={() => {
+                  onClick={async () => {
                     setError('');
                     if (formData.passcode !== formData.confirm_passcode) { setError('Passcodes do not match'); return; }
                     if (role === 'mentor' && formData.educator_key !== EDUCATOR_KEY) { setError('Invalid educator key'); return; }
-                    if (role === 'mentor') { handleSubmit(); } else { setStep(2); }
+                    if (role === 'mentor') { handleSubmit(); } else {
+                      await checkFormSubmission(formData.email);
+                      setStep(2);
+                    }
                   }}
                 >
                   {role === 'mentor' ? 'Create Mentor Account' : 'Next: Complete Profile'}
@@ -200,7 +237,17 @@ export default function Signup() {
                   <ArrowLeft className="w-4 h-4" /> Back
                 </button>
                 <h2 className="text-2xl font-bold mb-1">Complete Your Application</h2>
-                <p className="text-muted-foreground mb-6 text-sm">Tell us about yourself so mentors can review your profile.</p>
+                <p className="text-muted-foreground mb-4 text-sm">Tell us about yourself so mentors can review your profile.</p>
+
+                {prefilled && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-6"
+                  >
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <p className="text-xs text-emerald-400">Fields pre-filled from your Google Form submission. Feel free to edit anything below.</p>
+                  </motion.div>
+                )}
 
                 <div className="space-y-4">
                   <div>
