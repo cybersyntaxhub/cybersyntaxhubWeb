@@ -15,13 +15,20 @@ export default function MentorApplications() {
   useEffect(() => { loadApps(); }, []);
 
   const loadApps = async () => {
-    const data = await base44.entities.AppUser.filter({ role: 'student', status: 'pending' }, '-created_date');
-    setApplications(data);
+    const students = await base44.entities.AppUser.filter({ role: 'student', status: 'pending' }, '-created_date');
+    const submissions = await base44.entities.FormSubmission.filter({}, '-created_date');
+    const pendingSubmissions = submissions.filter(submission => !submission.status || submission.status === 'pending');
+    const combined = [...students, ...pendingSubmissions].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+    setApplications(combined);
     setLoading(false);
   };
 
-  const handleDecision = async (id, status) => {
-    await base44.entities.AppUser.update(id, { status });
+  const handleDecision = async (id, status, app) => {
+    if (app?.role === 'student') {
+      await base44.entities.AppUser.update(id, { status });
+    } else {
+      await base44.entities.FormSubmission.update(id, { status });
+    }
     toast({ title: status === 'accepted' ? 'Student Accepted!' : 'Application Rejected' });
     loadApps();
   };
@@ -63,12 +70,15 @@ export default function MentorApplications() {
                 {expandedId === app.id && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                     <div className="px-4 pb-4 border-t border-white/5 pt-3 space-y-3">
+                      {app.source === 'google_form' && (
+                        <div className="text-xs text-muted-foreground mb-1">Source: Google Form Submission</div>
+                      )}
                       {app.bio && <div><p className="text-xs text-muted-foreground mb-1">Bio</p><p className="text-sm">{app.bio}</p></div>}
-                      {app.interests?.length > 0 && (
+                      {((Array.isArray(app.interests) && app.interests.length > 0) || (!Array.isArray(app.interests) && app.interests)) && (
                         <div>
                           <p className="text-xs text-muted-foreground mb-1">Interests</p>
                           <div className="flex gap-2 flex-wrap">
-                            {app.interests.map(i => (
+                            {(Array.isArray(app.interests) ? app.interests : [app.interests]).map(i => (
                               <span key={i} className="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 text-xs">{i}</span>
                             ))}
                           </div>
@@ -85,10 +95,10 @@ export default function MentorApplications() {
                       {app.github_url && <a href={app.github_url} target="_blank" rel="noopener noreferrer" className="block text-sm text-cyan-400 hover:underline">GitHub ↗</a>}
 
                       <div className="flex gap-2 pt-2">
-                        <Button onClick={() => handleDecision(app.id, 'accepted')} className="bg-emerald-500 hover:bg-emerald-400 text-black text-sm">
+                        <Button onClick={() => handleDecision(app.id, 'accepted', app)} className="bg-emerald-500 hover:bg-emerald-400 text-black text-sm">
                           <UserCheck className="w-4 h-4 mr-1" /> Accept
                         </Button>
-                        <Button onClick={() => handleDecision(app.id, 'rejected')} variant="outline" className="border-red-500/30 text-red-400 hover:bg-red-500/10 text-sm">
+                        <Button onClick={() => handleDecision(app.id, 'rejected', app)} variant="outline" className="border-red-500/30 text-red-400 hover:bg-red-500/10 text-sm">
                           <UserX className="w-4 h-4 mr-1" /> Reject
                         </Button>
                       </div>

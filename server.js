@@ -353,6 +353,8 @@ app.post('/api/webhook/google-form', async (req, res) => {
     const submission = {
       id: makeId('fs'),
       created_date: createdDate,
+      status: 'pending',
+      source: 'google_form',
       email: data.email,
       full_name: data.name || data.full_name || '',
       address: data.address || '',
