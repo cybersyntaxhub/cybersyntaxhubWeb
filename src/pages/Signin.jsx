@@ -36,9 +36,7 @@ export default function Signin() {
         className="w-full max-w-md"
       >
         <Link to="/" className="flex items-center gap-2 mb-8 justify-center">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center">
-            <Zap className="w-5 h-5 text-black" />
-          </div>
+          <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
           <span className="text-lg font-bold">CyberSyntax<span className="text-cyan-400">Hub</span></span>
         </Link>
 

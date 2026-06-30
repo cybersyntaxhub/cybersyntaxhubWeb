@@ -68,12 +68,12 @@ export default function Landing() {
         className="relative z-20 flex items-center justify-between px-6 md:px-16 py-5 border-b border-white/[0.04] backdrop-blur-sm"
       >
         <div className="flex items-center gap-2.5">
-          <motion.div
-            className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-700 flex items-center justify-center shadow-lg shadow-cyan-500/20"
+          <motion.img
+            src="/logo.png"
+            alt="Logo"
+            className="w-9 h-9 object-contain"
             whileHover={{ scale: 1.08, rotate: 5 }} transition={{ type: 'spring', stiffness: 400 }}
-          >
-            <Zap className="w-5 h-5 text-black" />
-          </motion.div>
+          />
           <span className="text-lg font-bold tracking-tight">CyberSyntax<span className="text-cyan-400">Hub</span></span>
         </div>
 
@@ -312,10 +312,12 @@ export default function Landing() {
           <div className="absolute top-0 left-0 w-32 h-32 border-l border-t border-cyan-500/20 rounded-tl-3xl" />
           <div className="absolute bottom-0 right-0 w-32 h-32 border-r border-b border-purple-500/20 rounded-br-3xl" />
 
-          <motion.div className="inline-block w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-cyan-700 flex items-center justify-center mb-6 shadow-xl shadow-cyan-500/20 mx-auto"
-            animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity }}>
-            <Zap className="w-8 h-8 text-black" />
-          </motion.div>
+          <motion.img
+            src="/logo.png"
+            alt="Logo"
+            className="w-16 h-16 object-contain mb-6 mx-auto"
+            animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity }}
+          />
 
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
             Ready to level up?
@@ -347,9 +349,7 @@ export default function Landing() {
       <footer className="relative z-10 border-t border-white/[0.05] px-6 md:px-16 py-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-700 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-black" />
-            </div>
+            <img src="/logo.png" alt="Logo" className="w-7 h-7 object-contain" />
             <span className="text-sm font-bold">CyberSyntax<span className="text-cyan-400">Hub</span></span>
           </div>
           <p className="text-xs text-muted-foreground">© 2025 CyberSyntax Hub. All rights reserved.</p>

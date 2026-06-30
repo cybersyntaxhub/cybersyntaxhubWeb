@@ -13,9 +13,7 @@ export default function MobileSidebar({ items }) {
     <>
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 py-3 bg-card/90 backdrop-blur border-b border-white/5">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center">
-            <Zap className="w-4 h-4 text-black" />
-          </div>
+          <img src="/logo.png" alt="Logo" className="w-7 h-7 object-contain" />
           <span className="text-sm font-bold">CSH</span>
         </Link>
         <button onClick={() => setOpen(!open)}>

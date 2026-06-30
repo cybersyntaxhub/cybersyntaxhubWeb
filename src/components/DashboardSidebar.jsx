@@ -11,9 +11,7 @@ export default function DashboardSidebar({ items }) {
     <aside className="w-64 min-h-screen border-r border-white/5 bg-card/50 flex flex-col">
       <div className="p-5 border-b border-white/5">
         <Link to="/" className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center">
-            <Zap className="w-4 h-4 text-black" />
-          </div>
+          <img src="/logo.png" alt="Logo" className="w-7 h-7 object-contain" />
           <span className="text-sm font-bold">CyberSyntax<span className="text-cyan-400">Hub</span></span>
         </Link>
       </div>
