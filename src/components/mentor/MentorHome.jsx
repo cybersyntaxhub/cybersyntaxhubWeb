@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 import { motion } from 'framer-motion';
-import { UserCheck, Users, Megaphone, BookOpen, ClipboardList, MessageCircle } from 'lucide-react';
+import { UserCheck, Users, Megaphone, BookOpen, ClipboardList } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function MentorHome() {

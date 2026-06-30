@@ -5,11 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 import { base44 } from '@/api/base44Client';
-import { Zap, GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const EDUCATOR_KEY = 'CYBERSYNTAX2025';

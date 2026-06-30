@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Zap, LogOut } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 
 export default function DashboardSidebar({ items }) {

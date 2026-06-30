@@ -3,7 +3,9 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
+import { randomUUID } from 'crypto';
 import { fileURLToPath } from 'url';
+import { supabase } from './supabase.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -11,57 +13,26 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middlewares
+const ENTITY_NAMES = new Set([
+  'AppUser',
+  'Announcement',
+  'Assignment',
+  'Message',
+  'Course',
+  'CourseProgress',
+  'FormSubmission'
+]);
+
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(express.json());
 
-// Set up uploads directory static serving
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 app.use('/uploads', express.static(uploadDir));
 
-// Database file setup
-const DB_FILE = path.join(__dirname, 'database.json');
-
-function readDB() {
-  if (!fs.existsSync(DB_FILE)) {
-    const initial = {
-      AppUser: [],
-      Announcement: [],
-      Assignment: [],
-      Message: [],
-      Course: [],
-      CourseProgress: [],
-      FormSubmission: []
-    };
-    fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2), 'utf8');
-    return initial;
-  }
-  try {
-    return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-  } catch (e) {
-    console.error('Error reading database.json, resetting database', e);
-    const initial = {
-      AppUser: [],
-      Announcement: [],
-      Assignment: [],
-      Message: [],
-      Course: [],
-      CourseProgress: [],
-      FormSubmission: []
-    };
-    fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2), 'utf8');
-    return initial;
-  }
-}
-
-function writeDB(data) {
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
-}
-
-// Multer storage setup for uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, uploadDir);
@@ -72,22 +43,62 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + '-' + uniqueSuffix + ext);
   }
 });
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
-// Upload Endpoint
-app.post('/api/upload', upload.single('file'), (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No file uploaded' });
+function ensureEntity(entity) {
+  if (!ENTITY_NAMES.has(entity)) {
+    const error = new Error(`Entity ${entity} not found`);
+    error.status = 404;
+    throw error;
   }
-  const host = req.get('host');
-  const protocol = req.protocol;
-  const fileUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
-  res.json({ file_url: fileUrl });
-});
+}
 
-// Helper: sort array of objects
+function makeId(prefix = 'id') {
+  return `${prefix}_${randomUUID()}`;
+}
+
+function rowToItem(row) {
+  return {
+    ...(row.data || {}),
+    id: row.id,
+    created_date: row.created_date,
+    ...(row.updated_date ? { updated_date: row.updated_date } : {})
+  };
+}
+
+function itemToData(item) {
+  const { id, created_date, updated_date, ...data } = item;
+  return data;
+}
+
+function normalizeFilterValue(value) {
+  if (typeof value === 'string') {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    if (value.trim() !== '' && !Number.isNaN(Number(value))) return Number(value);
+  }
+  return value;
+}
+
+function valuesMatch(itemValue, criteriaValue) {
+  if (Array.isArray(criteriaValue)) {
+    return criteriaValue.includes(itemValue);
+  }
+
+  const normalizedCriteria = normalizeFilterValue(criteriaValue);
+  return itemValue === normalizedCriteria || String(itemValue) === String(criteriaValue);
+}
+
+function matchesCriteria(item, criteria) {
+  return Object.entries(criteria).every(([key, value]) => {
+    if (item[key] === undefined) return false;
+    return valuesMatch(item[key], value);
+  });
+}
+
 function sortItems(items, sortParam) {
   if (!sortParam) return items;
+
   const isDesc = sortParam.startsWith('-');
   const field = isDesc ? sortParam.slice(1) : sortParam;
 
@@ -106,228 +117,282 @@ function sortItems(items, sortParam) {
   });
 }
 
-// Generic CRUD endpoints
+function applyLimit(items, limitParam) {
+  const limit = parseInt(limitParam, 10);
+  return Number.isFinite(limit) && limit > 0 ? items.slice(0, limit) : items;
+}
 
-// 1. Get all with sorting, limit, and query parameters filtering
-app.get('/api/entities/:entity', (req, res) => {
-  const { entity } = req.params;
-  const db = readDB();
-  if (!db[entity]) {
-    return res.status(404).json({ error: `Entity ${entity} not found` });
+async function loadEntityItems(entity) {
+  ensureEntity(entity);
+
+  const { data, error } = await supabase
+    .from('entity_records')
+    .select('id, entity, data, created_date, updated_date')
+    .eq('entity', entity);
+
+  if (error) throw error;
+  return data.map(rowToItem);
+}
+
+function handleRouteError(res, error) {
+  console.error(error);
+  res.status(error.status || 500).json({ error: error.message || 'Internal server error' });
+}
+
+app.post('/api/upload', upload.single('file'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
   }
 
-  let items = db[entity];
+  const host = req.get('host');
+  const protocol = req.protocol;
+  const fileUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
+  res.json({ file_url: fileUrl });
+});
 
-  // Apply filters from query string (except _sort, _limit)
-  const filters = {};
-  Object.entries(req.query).forEach(([key, val]) => {
-    if (key !== '_sort' && key !== '_limit') {
-      filters[key] = val;
+app.get('/api/entities/:entity', async (req, res) => {
+  try {
+    const { entity } = req.params;
+    const { _sort, _limit, ...filters } = req.query;
+
+    let items = await loadEntityItems(entity);
+
+    if (Object.keys(filters).length > 0) {
+      items = items.filter(item => matchesCriteria(item, filters));
     }
-  });
 
-  if (Object.keys(filters).length > 0) {
-    items = items.filter(item => {
-      return Object.entries(filters).every(([key, val]) => {
-        if (item[key] === undefined) return false;
-        if (typeof item[key] === 'boolean') {
-          return String(item[key]) === val;
-        }
-        if (typeof item[key] === 'number') {
-          return Number(item[key]) === Number(val);
-        }
-        return String(item[key]) === val;
+    items = sortItems(items, _sort);
+    items = applyLimit(items, _limit);
+
+    res.json(items);
+  } catch (error) {
+    handleRouteError(res, error);
+  }
+});
+
+app.post('/api/entities/:entity/filter', async (req, res) => {
+  try {
+    const { entity } = req.params;
+    const { _sort: bodySort, _limit: bodyLimit, ...criteria } = req.body || {};
+
+    let items = await loadEntityItems(entity);
+
+    if (Object.keys(criteria).length > 0) {
+      items = items.filter(item => matchesCriteria(item, criteria));
+    }
+
+    items = sortItems(items, req.query._sort || bodySort);
+    items = applyLimit(items, req.query._limit || bodyLimit);
+
+    res.json(items);
+  } catch (error) {
+    handleRouteError(res, error);
+  }
+});
+
+app.get('/api/entities/:entity/:id', async (req, res) => {
+  try {
+    const { entity, id } = req.params;
+    ensureEntity(entity);
+
+    const { data, error } = await supabase
+      .from('entity_records')
+      .select('id, entity, data, created_date, updated_date')
+      .eq('entity', entity)
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return res.status(404).json({ error: 'Item not found' });
+
+    res.json(rowToItem(data));
+  } catch (error) {
+    handleRouteError(res, error);
+  }
+});
+
+app.post('/api/entities/:entity', async (req, res) => {
+  try {
+    const { entity } = req.params;
+    ensureEntity(entity);
+
+    const createdDate = new Date().toISOString();
+    const newItem = {
+      ...req.body,
+      id: makeId(entity === 'FormSubmission' ? 'fs' : 'id'),
+      created_date: createdDate
+    };
+
+    const { data, error } = await supabase
+      .from('entity_records')
+      .insert({
+        entity,
+        id: newItem.id,
+        data: itemToData(newItem),
+        created_date: createdDate
+      })
+      .select('id, entity, data, created_date, updated_date')
+      .single();
+
+    if (error) throw error;
+    res.status(201).json(rowToItem(data));
+  } catch (error) {
+    handleRouteError(res, error);
+  }
+});
+
+app.put('/api/entities/:entity/:id', async (req, res) => {
+  try {
+    const { entity, id } = req.params;
+    ensureEntity(entity);
+
+    const { data: existing, error: getError } = await supabase
+      .from('entity_records')
+      .select('id, entity, data, created_date, updated_date')
+      .eq('entity', entity)
+      .eq('id', id)
+      .maybeSingle();
+
+    if (getError) throw getError;
+    if (!existing) return res.status(404).json({ error: 'Item not found' });
+
+    const updatedDate = new Date().toISOString();
+    const updatedItem = {
+      ...rowToItem(existing),
+      ...req.body,
+      id,
+      updated_date: updatedDate
+    };
+
+    const { data, error } = await supabase
+      .from('entity_records')
+      .update({
+        data: itemToData(updatedItem),
+        updated_date: updatedDate
+      })
+      .eq('entity', entity)
+      .eq('id', id)
+      .select('id, entity, data, created_date, updated_date')
+      .single();
+
+    if (error) throw error;
+    res.json(rowToItem(data));
+  } catch (error) {
+    handleRouteError(res, error);
+  }
+});
+
+app.delete('/api/entities/:entity/:id', async (req, res) => {
+  try {
+    const { entity, id } = req.params;
+    ensureEntity(entity);
+
+    const { data, error } = await supabase
+      .from('entity_records')
+      .delete()
+      .eq('entity', entity)
+      .eq('id', id)
+      .select('id');
+
+    if (error) throw error;
+    if (data.length === 0) return res.status(404).json({ error: 'Item not found' });
+
+    res.json({ success: true });
+  } catch (error) {
+    handleRouteError(res, error);
+  }
+});
+
+app.post('/api/entities/:entity/deleteMany', async (req, res) => {
+  try {
+    const { entity } = req.params;
+    const criteria = req.body || {};
+    const items = await loadEntityItems(entity);
+    const ids = items.filter(item => matchesCriteria(item, criteria)).map(item => item.id);
+
+    if (ids.length === 0) {
+      return res.json({ success: true, deleted: 0 });
+    }
+
+    const { error } = await supabase
+      .from('entity_records')
+      .delete()
+      .eq('entity', entity)
+      .in('id', ids);
+
+    if (error) throw error;
+    res.json({ success: true, deleted: ids.length });
+  } catch (error) {
+    handleRouteError(res, error);
+  }
+});
+
+app.post('/api/webhook/google-form', async (req, res) => {
+  try {
+    const data = req.body;
+    if (!data || !data.email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+
+    const existing = await loadEntityItems('FormSubmission');
+    const matchingIds = existing
+      .filter(submission => submission.email?.toLowerCase() === data.email.toLowerCase())
+      .map(submission => submission.id);
+
+    if (matchingIds.length > 0) {
+      const { error } = await supabase
+        .from('entity_records')
+        .delete()
+        .eq('entity', 'FormSubmission')
+        .in('id', matchingIds);
+
+      if (error) throw error;
+    }
+
+    const createdDate = new Date().toISOString();
+    const submission = {
+      id: makeId('fs'),
+      created_date: createdDate,
+      email: data.email,
+      full_name: data.name || data.full_name || '',
+      address: data.address || '',
+      phone: data.phone || data.phone_number || '',
+      grade: data.grade || data.current_grade || '',
+      school: data.school || data.institution || '',
+      country: data.country || '',
+      linkedin_url: data.linkedin || data.linkedin_url || '',
+      referral_source: data.referral_source || data.how_did_you_hear || '',
+      preferred_track: data.preferred_track || '',
+      interests: data.interests || data.what_excites_you || '',
+      bio: data.bio || data.tell_us_about_yourself || '',
+      goals: data.goals || data.why_good_fit || '',
+      resume_url: data.resume_url || ''
+    };
+
+    const { error } = await supabase
+      .from('entity_records')
+      .insert({
+        entity: 'FormSubmission',
+        id: submission.id,
+        data: itemToData(submission),
+        created_date: createdDate
       });
-    });
+
+    if (error) throw error;
+
+    console.log(`[Webhook] Google Form submission saved for: ${submission.email}`);
+    res.status(201).json({ success: true, id: submission.id });
+  } catch (error) {
+    handleRouteError(res, error);
   }
-
-  const sort = req.query._sort;
-  const limit = parseInt(req.query._limit, 10);
-
-  items = sortItems(items, sort);
-  if (limit) {
-    items = items.slice(0, limit);
-  }
-
-  res.json(items);
 });
 
-// 2. Filter list by criteria using POST (for more complex queries)
-app.post('/api/entities/:entity/filter', (req, res) => {
-  const { entity } = req.params;
-  const db = readDB();
-  if (!db[entity]) {
-    return res.status(404).json({ error: `Entity ${entity} not found` });
-  }
+app.get('/api/health', async (req, res) => {
+  const { error } = await supabase
+    .from('entity_records')
+    .select('id', { count: 'exact', head: true });
 
-  let items = db[entity];
-  const { _sort, _limit, ...criteria } = req.body || {};
-
-  items = items.filter(item => {
-    return Object.entries(criteria).every(([key, value]) => {
-      if (item[key] === undefined) return false;
-      if (Array.isArray(value)) {
-        return value.includes(item[key]);
-      }
-      return item[key] === value;
-    });
-  });
-
-  const sort = req.query._sort || _sort;
-  const limit = parseInt(req.query._limit || _limit, 10);
-
-  items = sortItems(items, sort);
-  if (limit) {
-    items = items.slice(0, limit);
-  }
-
-  res.json(items);
-});
-
-// 3. Get single item by ID
-app.get('/api/entities/:entity/:id', (req, res) => {
-  const { entity, id } = req.params;
-  const db = readDB();
-  if (!db[entity]) {
-    return res.status(404).json({ error: `Entity ${entity} not found` });
-  }
-
-  const item = db[entity].find(item => item.id === id);
-  if (!item) {
-    return res.status(404).json({ error: 'Item not found' });
-  }
-
-  res.json(item);
-});
-
-// 4. Create new item
-app.post('/api/entities/:entity', (req, res) => {
-  const { entity } = req.params;
-  const db = readDB();
-  if (!db[entity]) {
-    return res.status(404).json({ error: `Entity ${entity} not found` });
-  }
-
-  const newItem = {
-    ...req.body,
-    id: 'id_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString().slice(-4),
-    created_date: new Date().toISOString()
-  };
-
-  db[entity].push(newItem);
-  writeDB(db);
-  res.status(201).json(newItem);
-});
-
-// 5. Update item
-app.put('/api/entities/:entity/:id', (req, res) => {
-  const { entity, id } = req.params;
-  const db = readDB();
-  if (!db[entity]) {
-    return res.status(404).json({ error: `Entity ${entity} not found` });
-  }
-
-  const index = db[entity].findIndex(item => item.id === id);
-  if (index === -1) {
-    return res.status(404).json({ error: 'Item not found' });
-  }
-
-  const updatedItem = {
-    ...db[entity][index],
-    ...req.body,
-    updated_date: new Date().toISOString()
-  };
-
-  db[entity][index] = updatedItem;
-  writeDB(db);
-  res.json(updatedItem);
-});
-
-// 6. Delete single item
-app.delete('/api/entities/:entity/:id', (req, res) => {
-  const { entity, id } = req.params;
-  const db = readDB();
-  if (!db[entity]) {
-    return res.status(404).json({ error: `Entity ${entity} not found` });
-  }
-
-  const index = db[entity].findIndex(item => item.id === id);
-  if (index === -1) {
-    return res.status(404).json({ error: 'Item not found' });
-  }
-
-  db[entity].splice(index, 1);
-  writeDB(db);
-  res.json({ success: true });
-});
-
-// 7. Delete multiple items matching a criteria
-app.post('/api/entities/:entity/deleteMany', (req, res) => {
-  const { entity } = req.params;
-  const db = readDB();
-  if (!db[entity]) {
-    return res.status(404).json({ error: `Entity ${entity} not found` });
-  }
-
-  const criteria = req.body || {};
-  let removedCount = 0;
-
-  db[entity] = db[entity].filter(item => {
-    const matches = Object.entries(criteria).every(([key, value]) => {
-      return item[key] === value;
-    });
-    if (matches) {
-      removedCount++;
-    }
-    return !matches;
-  });
-
-  writeDB(db);
-  res.json({ success: true, deleted: removedCount });
-});
-
-// Google Form Webhook endpoint
-app.post('/api/webhook/google-form', (req, res) => {
-  const db = readDB();
-  if (!db.FormSubmission) {
-    db.FormSubmission = [];
-  }
-
-  const data = req.body;
-  if (!data || !data.email) {
-    return res.status(400).json({ error: 'Email is required' });
-  }
-
-  // Remove any existing submission with the same email (dedup)
-  db.FormSubmission = db.FormSubmission.filter(
-    s => s.email.toLowerCase() !== data.email.toLowerCase()
-  );
-
-  // Map Google Form fields to our schema
-  const submission = {
-    id: 'fs_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString().slice(-4),
-    created_date: new Date().toISOString(),
-    email: data.email,
-    full_name: data.name || data.full_name || '',
-    address: data.address || '',
-    phone: data.phone || data.phone_number || '',
-    grade: data.grade || data.current_grade || '',
-    school: data.school || data.institution || '',
-    country: data.country || '',
-    linkedin_url: data.linkedin || data.linkedin_url || '',
-    referral_source: data.referral_source || data.how_did_you_hear || '',
-    preferred_track: data.preferred_track || '',
-    interests: data.interests || data.what_excites_you || '',
-    bio: data.bio || data.tell_us_about_yourself || '',
-    goals: data.goals || data.why_good_fit || '',
-    resume_url: data.resume_url || '',
-  };
-
-  db.FormSubmission.push(submission);
-  writeDB(db);
-
-  console.log(`[Webhook] Google Form submission saved for: ${submission.email}`);
-  res.status(201).json({ success: true, id: submission.id });
+  res.status(error ? 500 : 200).json({ ok: !error, error: error?.message });
 });
 
 app.listen(PORT, () => {
