@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Users, BookOpen, Shield, ChevronDown, Star, Code2, Brain, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -50,11 +50,21 @@ function CountUp({ target, suffix = '' }) {
 
 export default function Landing() {
   const [activeTrack, setActiveTrack] = useState(null);
+  const [heroWordIndex, setHeroWordIndex] = useState(0);
   const { currentUser } = useAppAuth();
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const heroY = useTransform(scrollY, [0, 400], [0, -60]);
   const dashboardPath = currentUser?.role === 'mentor' ? '/mentor' : '/student';
+  const rotatingHeroWords = ['tech', 'bio', 'finance', 'data science'];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroWordIndex((prev) => (prev + 1) % rotatingHeroWords.length);
+    }, 2200);
+
+    return () => clearInterval(interval);
+  }, [rotatingHeroWords.length]);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
@@ -130,14 +140,21 @@ export default function Landing() {
           className="text-5xl md:text-8xl font-black tracking-tight leading-[0.95] max-w-5xl"
         >
           Learn from the
-          <motion.span
-            className="block bg-gradient-to-r from-cyan-400 via-emerald-300 to-purple-500 bg-clip-text text-transparent"
-            animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ backgroundSize: '200% 200%' }}
-          >
-            best in tech
-          </motion.span>
+          <div className="block min-h-[1.1em]">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={rotatingHeroWords[heroWordIndex]}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.55, ease: 'easeInOut' }}
+                className="block bg-gradient-to-r from-cyan-400 via-emerald-300 to-purple-500 bg-clip-text text-transparent"
+                style={{ backgroundSize: '200% 200%' }}
+              >
+                best in {rotatingHeroWords[heroWordIndex]}
+              </motion.span>
+            </AnimatePresence>
+          </div>
         </motion.h1>
 
         <motion.p
