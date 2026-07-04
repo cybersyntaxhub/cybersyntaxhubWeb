@@ -3,7 +3,7 @@ import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import MobileSidebar from '@/components/MobileSidebar';
-import { LayoutDashboard, Megaphone, BookOpen, ClipboardList, MessageCircle } from 'lucide-react';
+import { LayoutDashboard, Megaphone, BookOpen, ClipboardList, MessageCircle, House, LogOut } from 'lucide-react';
 import StudentHome from '@/components/student/StudentHome';
 
 const sidebarItems = [
@@ -15,18 +15,18 @@ const sidebarItems = [
 ];
 
 export default function StudentDashboard() {
-  const { currentUser, loading, refreshUser } = useAppAuth();
+  const { currentUser, loading, refreshUser, logout } = useAppAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     if (!loading && !currentUser) navigate('/signin');
     if (!loading && currentUser?.role === 'mentor') navigate('/mentor');
-  }, [loading, currentUser]);
+  }, [loading, currentUser, navigate]);
 
   useEffect(() => {
     if (currentUser) refreshUser();
-  }, []);
+  }, [currentUser, refreshUser]);
 
   if (loading) {
     return (
@@ -36,27 +36,29 @@ export default function StudentDashboard() {
     );
   }
 
-  if (currentUser?.status === 'pending') {
+  if (currentUser?.status === 'pending' || currentUser?.status === 'rejected') {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center mx-auto mb-4">
             <ClipboardList className="w-8 h-8 text-yellow-500" />
           </div>
-          <h2 className="text-2xl font-bold mb-2">Application Pending</h2>
-          <p className="text-muted-foreground">Your application is being reviewed by a mentor. You'll get access once accepted.</p>
-          <button onClick={() => { refreshUser(); }} className="mt-6 text-cyan-400 text-sm hover:underline">Refresh Status</button>
-        </div>
-      </div>
-    );
-  }
-
-  if (currentUser?.status === 'rejected') {
-    return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <h2 className="text-2xl font-bold mb-2 text-red-400">Application Not Accepted</h2>
-          <p className="text-muted-foreground">Unfortunately your application was not accepted at this time.</p>
+          <h2 className="text-2xl font-bold mb-2">
+            {currentUser?.status === 'rejected' ? 'Application Not Accepted' : 'Application Pending'}
+          </h2>
+          <p className="text-muted-foreground">
+            {currentUser?.status === 'rejected'
+              ? 'Your application was not accepted at this time, but you can still explore the public site while we review next steps.'
+              : 'Your student portal is still being reviewed. You can continue exploring the public site while mentors finish their review.'}
+          </p>
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <button onClick={() => navigate('/')} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm hover:bg-white/5">
+              <House className="w-4 h-4" /> Return Home
+            </button>
+            <button onClick={() => { logout(); navigate('/'); }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm hover:bg-white/5">
+              <LogOut className="w-4 h-4" /> Sign Out
+            </button>
+          </div>
         </div>
       </div>
     );

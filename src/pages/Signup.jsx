@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -8,24 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 import { base44 } from '@/api/base44Client';
-import { GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const EDUCATOR_KEY = 'CYBERSYNTAX2025';
 
 const interestOptions = ['CyberSecurity', 'BioTech', 'Finance', 'Data Science'];
-
-// Map Google Form interest strings to our internal values
-const mapInterest = (raw) => {
-  if (!raw) return [];
-  const str = typeof raw === 'string' ? raw : String(raw);
-  const mapped = [];
-  if (/cyber/i.test(str)) mapped.push('CyberSecurity');
-  if (/bio/i.test(str)) mapped.push('BioTech');
-  if (/finance/i.test(str)) mapped.push('Finance');
-  if (/data/i.test(str)) mapped.push('Data Science');
-  return mapped;
-};
 
 export default function Signup() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -35,39 +23,20 @@ export default function Signup() {
   const [role, setRole] = useState(initialRole || 'student');
   const [formData, setFormData] = useState({
     full_name: '', email: '', passcode: '', confirm_passcode: '',
-    educator_key: '', bio: '', interests: [], experience_level: 'beginner',
-    goals: '', linkedin_url: '', github_url: '',
+    educator_key: '', bio: '', address: '', phone_number: '', grade: '', school_name: '', how_heard: '', fit_explanation: '', interests: [], experience_level: 'beginner', goals: '', linkedin_url: '', github_url: '',
   });
   const [resumeFile, setResumeFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [prefilled, setPrefilled] = useState(false);
-  const { signup } = useAppAuth();
+  const { signup, currentUser, loading: authLoading } = useAppAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const checkFormSubmission = async (email) => {
-    try {
-      const submissions = await base44.entities.FormSubmission.filter({ email });
-      if (submissions.length > 0) {
-        const sub = submissions[0];
-        const mappedInterests = mapInterest(sub.interests);
-        setFormData(prev => ({
-          ...prev,
-          full_name: sub.full_name || prev.full_name,
-          bio: sub.bio || prev.bio,
-          goals: sub.goals || prev.goals,
-          linkedin_url: sub.linkedin_url || prev.linkedin_url,
-          interests: mappedInterests.length > 0 ? mappedInterests : prev.interests,
-        }));
-        setPrefilled(true);
-        toast({ title: 'Application found!', description: 'We pre-filled your profile from your Google Form submission.' });
-      }
-    } catch (e) {
-      // Silently continue — no form submission found
-      console.log('No form submission found for', email);
+  useEffect(() => {
+    if (!authLoading && currentUser) {
+      navigate(currentUser.role === 'mentor' ? '/mentor' : '/student');
     }
-  };
+  }, [authLoading, currentUser, navigate]);
 
   const update = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
 
@@ -80,6 +49,25 @@ export default function Signup() {
     }));
   };
 
+  const validateStudentApplication = () => {
+    const requiredFields = [
+      formData.bio.trim(),
+      formData.address.trim(),
+      formData.phone_number.trim(),
+      formData.grade.trim(),
+      formData.school_name.trim(),
+      formData.how_heard.trim(),
+      formData.fit_explanation.trim(),
+      formData.goals.trim(),
+    ];
+
+    if (requiredFields.some(value => !value) || formData.interests.length === 0) {
+      return 'Please fill in every required field and select at least one track.';
+    }
+
+    return '';
+  };
+
   const handleSubmit = async () => {
     setError('');
     if (formData.passcode !== formData.confirm_passcode) {
@@ -90,6 +78,15 @@ export default function Signup() {
       setError('Invalid educator key');
       return;
     }
+
+    if (role === 'student') {
+      const studentError = validateStudentApplication();
+      if (studentError) {
+        setError(studentError);
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       let resume_url = '';
@@ -99,17 +96,23 @@ export default function Signup() {
       }
 
       const userData = {
-        full_name: formData.full_name,
-        email: formData.email,
+        full_name: formData.full_name.trim(),
+        email: formData.email.trim(),
         passcode: formData.passcode,
         role,
         status: role === 'mentor' ? 'accepted' : 'pending',
-        bio: formData.bio,
+        bio: formData.bio.trim(),
+        address: formData.address.trim(),
+        phone_number: formData.phone_number.trim(),
+        grade: formData.grade.trim(),
+        school_name: formData.school_name.trim(),
+        how_heard: formData.how_heard.trim(),
+        fit_explanation: formData.fit_explanation.trim(),
         interests: formData.interests,
         experience_level: formData.experience_level,
-        goals: formData.goals,
-        linkedin_url: formData.linkedin_url,
-        github_url: formData.github_url,
+        goals: formData.goals.trim(),
+        linkedin_url: formData.linkedin_url.trim(),
+        github_url: formData.github_url.trim(),
         resume_url,
       };
 
@@ -142,7 +145,6 @@ export default function Signup() {
 
         <div className="rounded-2xl border border-white/10 bg-card p-8">
           <AnimatePresence mode="wait">
-            {/* Step 0: Choose role */}
             {step === 0 && (
               <motion.div key="role" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3 }}>
                 <h2 className="text-2xl font-bold mb-2 text-center">Join CyberSyntax Hub</h2>
@@ -168,7 +170,6 @@ export default function Signup() {
               </motion.div>
             )}
 
-            {/* Step 1: Account info */}
             {step === 1 && (
               <motion.div key="account" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3 }}>
                 <button onClick={() => setStep(0)} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-4">
@@ -212,15 +213,12 @@ export default function Signup() {
 
                 <Button
                   className="w-full mt-6 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
-                  disabled={!formData.full_name || !formData.email || !formData.passcode || !formData.confirm_passcode}
+                  disabled={!formData.full_name.trim() || !formData.email.trim() || !formData.passcode || !formData.confirm_passcode}
                   onClick={async () => {
                     setError('');
                     if (formData.passcode !== formData.confirm_passcode) { setError('Passcodes do not match'); return; }
                     if (role === 'mentor' && formData.educator_key !== EDUCATOR_KEY) { setError('Invalid educator key'); return; }
-                    if (role === 'mentor') { handleSubmit(); } else {
-                      await checkFormSubmission(formData.email);
-                      setStep(2);
-                    }
+                    if (role === 'mentor') { handleSubmit(); } else { setStep(2); }
                   }}
                 >
                   {role === 'mentor' ? 'Create Mentor Account' : 'Next: Complete Profile'}
@@ -229,7 +227,6 @@ export default function Signup() {
               </motion.div>
             )}
 
-            {/* Step 2: Student profile */}
             {step === 2 && role === 'student' && (
               <motion.div key="profile" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3 }}>
                 <button onClick={() => setStep(1)} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-4">
@@ -238,24 +235,46 @@ export default function Signup() {
                 <h2 className="text-2xl font-bold mb-1">Complete Your Application</h2>
                 <p className="text-muted-foreground mb-4 text-sm">Tell us about yourself so mentors can review your profile.</p>
 
-                {prefilled && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-6"
-                  >
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    <p className="text-xs text-emerald-400">Fields pre-filled from your Google Form submission. Feel free to edit anything below.</p>
-                  </motion.div>
-                )}
-
                 <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-3">
+                    <div>
+                      <Label>Address</Label>
+                      <Input value={formData.address} onChange={e => update('address', e.target.value)} placeholder="Street, city, state" className="mt-1 bg-background border-white/10" />
+                    </div>
+                    <div>
+                      <Label>Phone Number</Label>
+                      <Input value={formData.phone_number} onChange={e => update('phone_number', e.target.value)} placeholder="(555) 123-4567" className="mt-1 bg-background border-white/10" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Grade Level</Label>
+                      <Input value={formData.grade} onChange={e => update('grade', e.target.value)} placeholder="e.g. 11th grade" className="mt-1 bg-background border-white/10" />
+                    </div>
+                    <div>
+                      <Label>School / Institution</Label>
+                      <Input value={formData.school_name} onChange={e => update('school_name', e.target.value)} placeholder="School or program name" className="mt-1 bg-background border-white/10" />
+                    </div>
+                  </div>
+
                   <div>
-                    <Label>Bio</Label>
+                    <Label>How did you hear about CyberSyntaxHub?</Label>
+                    <Input value={formData.how_heard} onChange={e => update('how_heard', e.target.value)} placeholder="Friend, school, social media, event..." className="mt-1 bg-background border-white/10" />
+                  </div>
+
+                  <div>
+                    <Label>Short Bio</Label>
                     <Textarea value={formData.bio} onChange={e => update('bio', e.target.value)} placeholder="A brief intro about yourself..." className="mt-1 bg-background border-white/10 min-h-[80px]" />
                   </div>
 
                   <div>
-                    <Label className="mb-2 block">Interests</Label>
+                    <Label>Why do you want to join CyberSyntaxHub?</Label>
+                    <Textarea value={formData.fit_explanation} onChange={e => update('fit_explanation', e.target.value)} placeholder="Share why this program fits your goals and what you hope to contribute." className="mt-1 bg-background border-white/10 min-h-[80px]" />
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">Primary Track / Topic</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {interestOptions.map(opt => (
                         <button
@@ -271,6 +290,11 @@ export default function Signup() {
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  <div>
+                    <Label>Goals</Label>
+                    <Textarea value={formData.goals} onChange={e => update('goals', e.target.value)} placeholder="What do you hope to achieve?" className="mt-1 bg-background border-white/10 min-h-[60px]" />
                   </div>
 
                   <div>
@@ -290,11 +314,6 @@ export default function Signup() {
                         </button>
                       ))}
                     </div>
-                  </div>
-
-                  <div>
-                    <Label>Goals</Label>
-                    <Textarea value={formData.goals} onChange={e => update('goals', e.target.value)} placeholder="What do you hope to achieve?" className="mt-1 bg-background border-white/10 min-h-[60px]" />
                   </div>
 
                   <div>
@@ -332,7 +351,7 @@ export default function Signup() {
 
                 <Button
                   className="w-full mt-6 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
-                  disabled={loading || formData.interests.length === 0}
+                  disabled={loading}
                   onClick={handleSubmit}
                 >
                   {loading ? 'Submitting...' : 'Submit Application'}

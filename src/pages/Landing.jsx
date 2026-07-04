@@ -5,6 +5,7 @@ import { ArrowRight, Users, BookOpen, Shield, ChevronDown, Star, Code2, Brain, T
 import { Button } from '@/components/ui/button';
 import { CyberSecurityIcon, BioTechIcon, FinanceIcon, DataScienceIcon } from '@/components/AnimatedIcons';
 import ParticleBackground from '@/components/ParticleBackground';
+import { useAppAuth } from '@/lib/appAuth.jsx';
 
 const tracks = [
   { name: 'CyberSecurity', desc: 'Master ethical hacking, threat analysis, and defense systems at the cutting edge.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60' },
@@ -49,9 +50,11 @@ function CountUp({ target, suffix = '' }) {
 
 export default function Landing() {
   const [activeTrack, setActiveTrack] = useState(null);
+  const { currentUser } = useAppAuth();
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const heroY = useTransform(scrollY, [0, 400], [0, -60]);
+  const dashboardPath = currentUser?.role === 'mentor' ? '/mentor' : '/student';
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
@@ -88,13 +91,19 @@ export default function Landing() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link to="/signin">
-            <Button variant="ghost" className="text-sm text-muted-foreground hover:text-foreground">Sign In</Button>
-          </Link>
-          <Link to="/signup">
+          {currentUser ? (
+            <Link to={dashboardPath}>
+              <Button variant="ghost" className="text-sm text-muted-foreground hover:text-foreground">Open Dashboard</Button>
+            </Link>
+          ) : (
+            <Link to="/signin">
+              <Button variant="ghost" className="text-sm text-muted-foreground hover:text-foreground">Sign In</Button>
+            </Link>
+          )}
+          <Link to={currentUser ? dashboardPath : '/signup'}>
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
               <Button className="text-sm bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-5 shadow-lg shadow-cyan-500/20">
-                Get Started
+                {currentUser ? 'Continue' : 'Get Started'}
               </Button>
             </motion.div>
           </Link>
@@ -112,7 +121,7 @@ export default function Landing() {
         >
           <motion.span className="w-1.5 h-1.5 rounded-full bg-cyan-400"
             animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }} />
-          <span className="text-cyan-400 text-xs font-mono tracking-widest uppercase">Next-Gen Mentorship Platform</span>
+          <span className="text-cyan-400 text-xs font-mono tracking-widest uppercase">Student mentorship + growth lab</span>
         </motion.div>
 
         <motion.h1
@@ -136,7 +145,7 @@ export default function Landing() {
           transition={{ duration: 0.7, delay: 0.45 }}
           className="mt-7 text-muted-foreground text-lg md:text-xl max-w-2xl leading-relaxed"
         >
-          Connect with elite industry mentors across CyberSecurity, BioTech, Finance & Data Science.
+          CyberSyntaxHub is a mentorship and skill-building program where ambitious students explore emerging technology tracks with guided support, hands-on learning, and expert feedback.
           <span className="text-foreground/60"> Real guidance. Measurable growth.</span>
         </motion.p>
 
@@ -145,18 +154,18 @@ export default function Landing() {
           transition={{ duration: 0.7, delay: 0.65 }}
           className="mt-10 flex flex-col sm:flex-row gap-4"
         >
-          <Link to="/signup">
+          <Link to={currentUser ? dashboardPath : '/signup'}>
             <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
               <Button size="lg" className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-10 text-base h-12 shadow-xl shadow-cyan-500/25 group">
-                Apply as Student
+                {currentUser ? 'Open Dashboard' : 'Apply as Student'}
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </motion.div>
           </Link>
-          <Link to="/signup?role=mentor">
+          <Link to={currentUser ? dashboardPath : '/signup?role=mentor'}>
             <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
               <Button size="lg" variant="outline" className="border-white/10 hover:bg-white/5 hover:border-white/20 text-foreground font-semibold px-10 text-base h-12">
-                Join as Mentor
+                {currentUser ? 'View Profile' : 'Join as Mentor'}
               </Button>
             </motion.div>
           </Link>
@@ -323,7 +332,7 @@ export default function Landing() {
             Ready to level up?
           </h2>
           <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto">
-            Join hundreds of students already learning from world-class mentors on CyberSyntax Hub.
+            Join ambitious students building real skills with expert mentors through CyberSyntaxHub’s structured programs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/signup">
