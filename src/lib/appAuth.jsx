@@ -30,7 +30,16 @@ export function AppAuthProvider({ children }) {
 
   const signup = async (data) => {
     const existing = await base44.entities.AppUser.filter({ email: data.email });
-    if (existing.length > 0) throw new Error('Email already registered');
+    if (existing.length > 0) {
+      const existingUser = existing[0];
+      if (existingUser.status === 'rejected') {
+        const updated = await base44.entities.AppUser.update(existingUser.id, { ...data, status: 'pending' });
+        setCurrentUser(updated);
+        localStorage.setItem('cybersyntax_user', JSON.stringify(updated));
+        return updated;
+      }
+      throw new Error('Email already registered');
+    }
     const user = await base44.entities.AppUser.create(data);
     setCurrentUser(user);
     localStorage.setItem('cybersyntax_user', JSON.stringify(user));

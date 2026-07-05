@@ -9,16 +9,15 @@ import { useAppAuth } from '@/lib/appAuth.jsx';
 
 const tracks = [
   { name: 'CyberSecurity', desc: 'Master ethical hacking, threat analysis, and defense systems at the cutting edge.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.2fmno0j90s7z' },
-  { name: 'AI', desc: 'Explore applied machine learning, intelligent systems, and practical AI product thinking.', Icon: DataScienceIcon, color: '#a855f7', bg: 'from-purple-500/10 to-purple-500/0', border: 'border-purple-500/20 hover:border-purple-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.sndvrxn4hr8r' },
+  { name: 'BioTech', desc: 'Investigate biomedical innovation, health technology, and research-driven discovery.', Icon: BioTechIcon, color: '#39ff14', bg: 'from-green-500/10 to-green-500/0', border: 'border-green-500/20 hover:border-green-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.i8eo6ds87x36' },
   { name: 'Finance', desc: 'Quantitative analysis, algorithmic trading, DeFi, and modern fintech systems.', Icon: FinanceIcon, color: '#ffd700', bg: 'from-yellow-500/10 to-yellow-500/0', border: 'border-yellow-500/20 hover:border-yellow-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.maakuwfwdfa1' },
-  { name: 'Data Science', desc: 'Build deep expertise in analytics, experimentation, and data-driven problem solving.', Icon: DataScienceIcon, color: '#8b5cf6', bg: 'from-fuchsia-500/10 to-fuchsia-500/0', border: 'border-fuchsia-500/20 hover:border-fuchsia-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.hafbia94qyj8' },
-  { name: 'BioMed', desc: 'Investigate biomedical innovation, health technology, and research-driven discovery.', Icon: BioTechIcon, color: '#39ff14', bg: 'from-green-500/10 to-green-500/0', border: 'border-green-500/20 hover:border-green-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.i8eo6ds87x36' },
+  { name: 'Data Science', desc: 'Build deep expertise in analytics, AI programming, and data-driven problem solving.', Icon: DataScienceIcon, color: '#8b5cf6', bg: 'from-fuchsia-500/10 to-fuchsia-500/0', border: 'border-fuchsia-500/20 hover:border-fuchsia-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.hafbia94qyj8' },
 ];
 
 const stats = [
   { val: '500+', label: 'Students Enrolled', icon: Users },
   { val: '50+', label: 'Expert Mentors', icon: Brain },
-  { val: '5', label: 'Specialized Tracks', icon: Code2 },
+  { val: '4', label: 'Specialized Tracks', icon: Code2 },
   { val: '95%', label: 'Success Rate', icon: TrendingUp },
 ];
 
@@ -228,11 +227,11 @@ export default function Landing() {
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }} viewport={{ once: true }} className="text-center mb-20">
           <span className="inline-block px-3 py-1 rounded-full border border-white/10 text-xs font-mono text-muted-foreground tracking-wider uppercase mb-4">
-            Specializations
+            Primary Track / Topic
           </span>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight">Five Tracks. Infinite Potential.</h2>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight">Four tracks built for capstone focus.</h2>
           <p className="mt-4 text-muted-foreground text-lg max-w-xl mx-auto">
-            Choose your path and get matched with mentors who've built careers in your field.
+            Pick the one track you want to build your capstone on — only that domain is required for your final project.
           </p>
         </motion.div>
 
@@ -285,10 +284,13 @@ export default function Landing() {
           <span className="inline-block px-3 py-1 rounded-full border border-white/10 text-xs font-mono text-muted-foreground tracking-wider uppercase mb-4">
             Capstone Mentorship
           </span>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight">Complete the program with optional 1:1 mentorship</h2>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight">Build your capstone on the track that matters to you</h2>
           <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
-            After finishing all five specializations, CyberSyntaxHub gives you the choice to continue with a capstone project.
-            Work one-on-one with a mentor to build programming skills in the field and launch a portfolio-worthy project.
+            CyberSyntaxHub only requires the one mentorship track you want to capstone on — not every track.
+            Finance is for fintech, BioTech is for biotech, Data Science is for AI and programming, and CyberSecurity is for security engineering.
+          </p>
+          <p className="mt-4 text-cyan-300 text-base font-semibold max-w-2xl mx-auto">
+            Prerequisite: complete the fundamental mentorship course or demonstrate adequate experience in the field.
           </p>
         </div>
 

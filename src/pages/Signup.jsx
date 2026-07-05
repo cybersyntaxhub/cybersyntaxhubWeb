@@ -43,9 +43,7 @@ export default function Signup() {
   const toggleInterest = (interest) => {
     setFormData(prev => ({
       ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest],
+      interests: prev.interests.includes(interest) ? [] : [interest],
     }));
   };
 
@@ -62,7 +60,7 @@ export default function Signup() {
     ];
 
     if (requiredFields.some(value => !value) || formData.interests.length === 0) {
-      return 'Please fill in every required field and select at least one track.';
+      return 'Please fill in every required field and select one primary track.';
     }
 
     return '';
@@ -275,6 +273,7 @@ export default function Signup() {
 
                   <div>
                     <Label className="mb-2 block">Primary Track / Topic</Label>
+                    <p className="text-xs text-muted-foreground mb-2">Choose one track for your capstone focus.</p>
                     <div className="grid grid-cols-2 gap-2">
                       {interestOptions.map(opt => (
                         <button

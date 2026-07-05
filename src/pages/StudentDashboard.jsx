@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 import DashboardSidebar from '@/components/DashboardSidebar';
 import MobileSidebar from '@/components/MobileSidebar';
+import { useToast } from '@/components/ui/use-toast';
 import { LayoutDashboard, Megaphone, BookOpen, ClipboardList, MessageCircle, House, LogOut } from 'lucide-react';
 import StudentHome from '@/components/student/StudentHome';
 
@@ -15,7 +16,9 @@ const sidebarItems = [
 ];
 
 export default function StudentDashboard() {
-  const { currentUser, loading, refreshUser, logout } = useAppAuth();
+  const { currentUser, loading, refreshUser, logout, updateUser } = useAppAuth();
+  const [reapplying, setReapplying] = useState(false);
+  const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -27,6 +30,19 @@ export default function StudentDashboard() {
   useEffect(() => {
     if (currentUser) refreshUser();
   }, [currentUser, refreshUser]);
+
+  const handleReapply = async () => {
+    if (!currentUser) return;
+    setReapplying(true);
+    try {
+      await updateUser(currentUser.id, { status: 'pending' });
+      toast({ title: 'Reapplication Submitted', description: 'Your application has been reopened and is pending review.' });
+    } catch (err) {
+      toast({ title: 'Could not reapply', description: err.message || 'Please try again later.' });
+    } finally {
+      setReapplying(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -51,12 +67,24 @@ export default function StudentDashboard() {
               ? 'Your application was not accepted at this time, but you can still explore the public site while we review next steps.'
               : 'Your student portal is still being reviewed. You can continue exploring the public site while mentors finish their review.'}
           </p>
+          {currentUser?.status === 'rejected' && (
+            <p className="mt-4 text-sm text-cyan-300">You can reopen your application and submit it for review again.</p>
+          )}
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-            <button onClick={() => navigate('/')} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm hover:bg-white/5">
-              <House className="w-4 h-4" /> Return Home
-            </button>
-            <button onClick={() => { logout(); navigate('/'); }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm hover:bg-white/5">
+            {currentUser?.status === 'rejected' && (
+              <button
+                onClick={handleReapply}
+                disabled={reapplying}
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-4 py-2 text-sm hover:bg-cyan-500/15 disabled:opacity-50"
+              >
+                {reapplying ? 'Reapplying…' : 'Reapply'}
+              </button>
+            )}
+            <button onClick={() => { logout(); window.location.href = '/'; }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm hover:bg-white/5">
               <LogOut className="w-4 h-4" /> Sign Out
+            </button>
+            <button onClick={() => { window.location.href = '/'; }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm hover:bg-white/5">
+              <House className="w-4 h-4" /> Return Home
             </button>
           </div>
         </div>
