@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { CyberSecurityIcon, BioTechIcon, FinanceIcon, DataScienceIcon } from '@/components/AnimatedIcons';
 import ParticleBackground from '@/components/ParticleBackground';
 import { useAppAuth } from '@/lib/appAuth.jsx';
+import { currentCohort } from '@/lib/cohort';
 
 const tracks = [
   { name: 'CyberSecurity', desc: 'Master ethical hacking, threat analysis, and defense systems at the cutting edge.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.2fmno0j90s7z' },
@@ -167,9 +168,12 @@ export default function Landing() {
           CyberSyntaxHub is a mentorship and skill-building program where ambitious students explore emerging technology tracks with guided support, hands-on learning, and expert feedback.
           <span className="text-foreground/60"> Real guidance. Measurable growth.</span>
         </motion.p>
-
+        <motion.p className="mt-4 text-cyan-300 text-sm max-w-2xl mx-auto">
+          Join the {currentCohort} and follow cohort updates in Announcements for mentoring, reapply status, and next cohort notices.
+        </motion.p>
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.65 }}
           className="mt-10 flex flex-col sm:flex-row gap-4"
         >
@@ -287,8 +291,12 @@ export default function Landing() {
           </span>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight">Complete the program with optional 1:1 mentorship</h2>
           <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
-            After finishing all five specializations, CyberSyntaxHub gives you the choice to continue with a capstone project.
-            Work one-on-one with a mentor to build programming skills in the field and launch a portfolio-worthy project.
+            CyberSyntaxHub gives you a capstone path that requires only the one core specialization for your chosen field.
+            Finance is ideal for fintech, BioMed for biotech, AI for AI programming, and the same applies to the other tracks.
+          </p>
+          <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
+            Prerequisite: complete the fundamental mentorship course or demonstrate adequate experience in the field.
+            Then choose the single track that matches your capstone focus and build a portfolio-ready project with mentor guidance.
           </p>
         </div>
 

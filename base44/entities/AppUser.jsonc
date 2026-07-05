@@ -63,6 +63,13 @@
     },
     "github_url": {
       "type": "string"
+    },
+    "next_cohort_eligible": {
+      "type": "boolean",
+      "default": false
+    },
+    "applied_cohort": {
+      "type": "string"
     }
   },
   "required": [

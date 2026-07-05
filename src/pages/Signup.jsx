@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useAppAuth } from '@/lib/appAuth.jsx';
+import { currentCohort } from '@/lib/cohort';
 import { base44 } from '@/api/base44Client';
 import { GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -14,6 +15,11 @@ import { Link } from 'react-router-dom';
 const EDUCATOR_KEY = 'CYBERSYNTAX2025';
 
 const interestOptions = ['CyberSecurity', 'BioTech', 'Finance', 'Data Science'];
+const preferredTrackOptions = [
+  { label: 'Course', value: 'course' },
+  { label: 'Research', value: 'research' },
+  { label: 'Capstone Mentorship', value: 'capstone' },
+];
 
 export default function Signup() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -23,7 +29,7 @@ export default function Signup() {
   const [role, setRole] = useState(initialRole || 'student');
   const [formData, setFormData] = useState({
     full_name: '', email: '', passcode: '', confirm_passcode: '',
-    educator_key: '', bio: '', address: '', phone_number: '', grade: '', school_name: '', how_heard: '', fit_explanation: '', interests: [], experience_level: 'beginner', goals: '', linkedin_url: '', github_url: '',
+    educator_key: '', bio: '', address: '', phone_number: '', grade: '', school_name: '', how_heard: '', fit_explanation: '', interests: [], preferred_track: '', excitement: '', fundamental_course: '', external_experience: '', consider_regular: '', experience_level: 'beginner', goals: '', linkedin_url: '', github_url: '',
   });
   const [resumeFile, setResumeFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -59,10 +65,23 @@ export default function Signup() {
       formData.how_heard.trim(),
       formData.fit_explanation.trim(),
       formData.goals.trim(),
+      formData.preferred_track.trim(),
+      formData.excitement.trim(),
     ];
 
     if (requiredFields.some(value => !value) || formData.interests.length === 0) {
-      return 'Please fill in every required field and select at least one track.';
+      return 'Please fill in every required field, choose what excites you most, and select your preferred track.';
+    }
+
+    if (formData.preferred_track === 'capstone') {
+      const capstoneFields = [
+        formData.fundamental_course.trim(),
+        formData.external_experience.trim(),
+        formData.consider_regular.trim(),
+      ];
+      if (capstoneFields.some(value => !value)) {
+        return 'For capstone mentorship, please answer all capstone-specific questions.';
+      }
     }
 
     return '';
@@ -109,11 +128,18 @@ export default function Signup() {
         how_heard: formData.how_heard.trim(),
         fit_explanation: formData.fit_explanation.trim(),
         interests: formData.interests,
+        preferred_track: formData.preferred_track,
+        excitement: formData.excitement.trim(),
+        fundamental_course: formData.fundamental_course.trim(),
+        external_experience: formData.external_experience.trim(),
+        consider_regular: formData.consider_regular,
         experience_level: formData.experience_level,
         goals: formData.goals.trim(),
         linkedin_url: formData.linkedin_url.trim(),
         github_url: formData.github_url.trim(),
         resume_url,
+        applied_cohort: role === 'student' ? currentCohort : undefined,
+        next_cohort_eligible: false,
       };
 
       await signup(userData);
@@ -232,8 +258,8 @@ export default function Signup() {
                 <button onClick={() => setStep(1)} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-4">
                   <ArrowLeft className="w-4 h-4" /> Back
                 </button>
-                <h2 className="text-2xl font-bold mb-1">Complete Your Application</h2>
-                <p className="text-muted-foreground mb-4 text-sm">Tell us about yourself so mentors can review your profile.</p>
+                <h2 className="text-2xl font-bold mb-1">Complete Your {currentCohort} Application</h2>
+                <p className="text-muted-foreground mb-4 text-sm">Tell us about yourself so mentors can review your application for {currentCohort}.</p>
 
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 gap-3">
@@ -274,7 +300,26 @@ export default function Signup() {
                   </div>
 
                   <div>
-                    <Label className="mb-2 block">Primary Track / Topic</Label>
+                    <Label className="mb-2 block">Preferred Track</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      {preferredTrackOptions.map(option => (
+                        <button
+                          key={option.value}
+                          onClick={() => update('preferred_track', option.value)}
+                          className={`px-3 py-3 rounded-lg border text-sm text-left transition-all ${
+                            formData.preferred_track === option.value
+                              ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                              : 'border-white/10 text-muted-foreground hover:border-white/20'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">What excites you most?</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {interestOptions.map(opt => (
                         <button
@@ -291,6 +336,38 @@ export default function Signup() {
                       ))}
                     </div>
                   </div>
+
+                  {formData.preferred_track === 'capstone' && (
+                    <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <div className="text-sm font-semibold text-cyan-200">Capstone Mentorship Questions</div>
+                      <div>
+                        <Label>Which fundamental course did you complete and are looking for capstone alignment with?</Label>
+                        <Textarea value={formData.fundamental_course} onChange={e => update('fundamental_course', e.target.value)} placeholder="If none, write N/A" className="mt-1 bg-background border-white/10 min-h-[80px]" />
+                      </div>
+                      <div>
+                        <Label>If you did not complete any courses, what external experience do you have for capstone mentorship?</Label>
+                        <Textarea value={formData.external_experience} onChange={e => update('external_experience', e.target.value)} placeholder="If none, write N/A" className="mt-1 bg-background border-white/10 min-h-[80px]" />
+                      </div>
+                      <div>
+                        <Label>Would you like to be considered for regular mentorship if this capstone application is not accepted?</Label>
+                        <div className="flex gap-2 mt-2">
+                          {['yes', 'no'].map(option => (
+                            <button
+                              key={option}
+                              onClick={() => update('consider_regular', option)}
+                              className={`flex-1 px-3 py-2 rounded-lg border text-sm capitalize transition-all ${
+                                formData.consider_regular === option
+                                  ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                                  : 'border-white/10 text-muted-foreground hover:border-white/20'
+                              }`}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <Label>Goals</Label>
