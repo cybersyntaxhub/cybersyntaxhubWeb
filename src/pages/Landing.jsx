@@ -8,11 +8,11 @@ import ParticleBackground from '@/components/ParticleBackground';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 
 const tracks = [
-  { name: 'CyberSecurity', desc: 'Choose CyberSecurity for security and ethical hacking capstone work.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.2fmno0j90s7z' },
-  { name: 'AI', desc: 'Choose AI for applied programming projects and intelligent systems development.', Icon: DataScienceIcon, color: '#a855f7', bg: 'from-purple-500/10 to-purple-500/0', border: 'border-purple-500/20 hover:border-purple-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.sndvrxn4hr8r' },
-  { name: 'Finance', desc: 'Choose Finance for fintech and data-driven financial product capstones.', Icon: FinanceIcon, color: '#ffd700', bg: 'from-yellow-500/10 to-yellow-500/0', border: 'border-yellow-500/20 hover:border-yellow-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.maakuwfwdfa1' },
-  { name: 'Data Science', desc: 'Choose Data Science for analytics, modeling, and experimentation-focused capstones.', Icon: DataScienceIcon, color: '#8b5cf6', bg: 'from-fuchsia-500/10 to-fuchsia-500/0', border: 'border-fuchsia-500/20 hover:border-fuchsia-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.hafbia94qyj8' },
-  { name: 'BioTech', desc: 'Choose BioTech for biomedical innovation, health tech, and biology-driven capstones.', Icon: BioTechIcon, color: '#39ff14', bg: 'from-green-500/10 to-green-500/0', border: 'border-green-500/20 hover:border-green-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.i8eo6ds87x36' },
+  { name: 'CyberSecurity', desc: 'Master ethical hacking, threat analysis, and defense systems at the cutting edge.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.2fmno0j90s7z' },
+  { name: 'AI', desc: 'Explore applied machine learning, intelligent systems, and practical AI product thinking.', Icon: DataScienceIcon, color: '#a855f7', bg: 'from-purple-500/10 to-purple-500/0', border: 'border-purple-500/20 hover:border-purple-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.sndvrxn4hr8r' },
+  { name: 'Finance', desc: 'Quantitative analysis, algorithmic trading, DeFi, and modern fintech systems.', Icon: FinanceIcon, color: '#ffd700', bg: 'from-yellow-500/10 to-yellow-500/0', border: 'border-yellow-500/20 hover:border-yellow-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.maakuwfwdfa1' },
+  { name: 'Data Science', desc: 'Build deep expertise in analytics, experimentation, and data-driven problem solving.', Icon: DataScienceIcon, color: '#8b5cf6', bg: 'from-fuchsia-500/10 to-fuchsia-500/0', border: 'border-fuchsia-500/20 hover:border-fuchsia-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.hafbia94qyj8' },
+  { name: 'BioMed', desc: 'Investigate biomedical innovation, health technology, and research-driven discovery.', Icon: BioTechIcon, color: '#39ff14', bg: 'from-green-500/10 to-green-500/0', border: 'border-green-500/20 hover:border-green-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.i8eo6ds87x36' },
 ];
 
 const stats = [
@@ -57,7 +57,7 @@ export default function Landing() {
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const heroY = useTransform(scrollY, [0, 400], [0, -60]);
   const dashboardPath = currentUser?.role === 'mentor' ? '/mentor' : '/student';
-  const rotatingHeroWords = ['CyberSecurity', 'BioTech', 'Finance', 'AI', 'Data Science'];
+  const rotatingHeroWords = ['Tech', 'BioMed', 'Finance', 'Data Science'];
   const learnMoreUrl = 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?usp=sharing';
 
   useEffect(() => {
@@ -126,20 +126,21 @@ export default function Landing() {
       <motion.section style={{ opacity: heroOpacity, y: heroY }}
         className="relative z-10 flex flex-col items-center text-center px-6 pt-20 md:pt-32 pb-24">
 
+        <motion.div
+          initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7 }}
+          className="mb-8 flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/25 bg-cyan-500/5 backdrop-blur-sm"
+        >
+          <motion.span className="w-1.5 h-1.5 rounded-full bg-cyan-400"
+            animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }} />
+          <span className="text-cyan-400 text-xs font-mono tracking-widest uppercase">Student mentorship + growth lab</span>
+        </motion.div>
+
         <motion.h1
           initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           className="text-5xl md:text-8xl font-black tracking-tight leading-[0.95] max-w-5xl"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7 }}
-            className="mb-8 flex items-center gap-2 px-4 py-1.5 rounded-full border border-cyan-500/25 bg-cyan-500/5 backdrop-blur-sm"
-          >
-            <motion.span className="w-1.5 h-1.5 rounded-full bg-cyan-400"
-              animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.5, repeat: Infinity }} />
-            <span className="text-cyan-400 text-xs font-mono tracking-widest uppercase">Summer Cohort mentorship + growth lab</span>
-          </motion.div>
           Learn from the
           <div className="block min-h-[1.1em]">
             <AnimatePresence mode="wait">
@@ -231,7 +232,7 @@ export default function Landing() {
           </span>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight">Five Tracks. Infinite Potential.</h2>
           <p className="mt-4 text-muted-foreground text-lg max-w-xl mx-auto">
-            Choose one primary track and get matched with mentors who built careers in that field.
+            Choose your path and get matched with mentors who've built careers in your field.
           </p>
         </motion.div>
 
@@ -284,10 +285,10 @@ export default function Landing() {
           <span className="inline-block px-3 py-1 rounded-full border border-white/10 text-xs font-mono text-muted-foreground tracking-wider uppercase mb-4">
             Capstone Mentorship
           </span>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight">Complete the Summer Cohort with optional 1:1 mentorship</h2>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight">Complete the program with optional 1:1 mentorship</h2>
           <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
-            Choose one primary track for your capstone project and continue with mentor-led guidance.
-            Prerequisite: either complete the fundamental mentorship course or have adequate experience in the chosen field.
+            After finishing all five specializations, CyberSyntaxHub gives you the choice to continue with a capstone project.
+            Work one-on-one with a mentor to build programming skills in the field and launch a portfolio-worthy project.
           </p>
         </div>
 
@@ -311,7 +312,6 @@ export default function Landing() {
                 <li>1:1 mentor coaching with project guidance</li>
                 <li>Hands-on field-focused programming practice</li>
                 <li>Portfolio-ready capstone deliverable</li>
-                <li className="text-cyan-300">Only one primary track is required for your capstone.</li>
               </ul>
             </div>
           </div>
@@ -439,7 +439,7 @@ export default function Landing() {
             Ready to level up?
           </h2>
           <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto">
-            Join ambitious students building real skills with expert mentors in our Summer Cohort.
+            Join ambitious students building real skills with expert mentors through CyberSyntaxHub’s structured programs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/signup">

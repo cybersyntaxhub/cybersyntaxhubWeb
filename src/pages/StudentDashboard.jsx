@@ -52,10 +52,10 @@ export default function StudentDashboard() {
               : 'Your student portal is still being reviewed. You can continue exploring the public site while mentors finish their review.'}
           </p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-            <button type="button" onClick={() => { logout(); window.location.href = '/'; }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm hover:bg-white/5">
+            <button onClick={() => navigate('/')} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm hover:bg-white/5">
               <House className="w-4 h-4" /> Return Home
             </button>
-            <button type="button" onClick={() => { logout(); window.location.href = '/'; }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm hover:bg-white/5">
+            <button onClick={() => { logout(); navigate('/'); }} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm hover:bg-white/5">
               <LogOut className="w-4 h-4" /> Sign Out
             </button>
           </div>

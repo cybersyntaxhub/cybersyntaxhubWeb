@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 
 const EDUCATOR_KEY = 'CYBERSYNTAX2025';
 
-const interestOptions = ['CyberSecurity', 'BioTech', 'Finance', 'Data Science', 'AI'];
+const interestOptions = ['CyberSecurity', 'BioTech', 'Finance', 'Data Science'];
 
 export default function Signup() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -43,7 +43,9 @@ export default function Signup() {
   const toggleInterest = (interest) => {
     setFormData(prev => ({
       ...prev,
-      interests: [interest],
+      interests: prev.interests.includes(interest)
+        ? prev.interests.filter(i => i !== interest)
+        : [...prev.interests, interest],
     }));
   };
 
@@ -59,8 +61,8 @@ export default function Signup() {
       formData.goals.trim(),
     ];
 
-    if (requiredFields.some(value => !value) || formData.interests.length !== 1) {
-      return 'Please fill in every required field and select one primary track.';
+    if (requiredFields.some(value => !value) || formData.interests.length === 0) {
+      return 'Please fill in every required field and select at least one track.';
     }
 
     return '';
@@ -99,7 +101,6 @@ export default function Signup() {
         passcode: formData.passcode,
         role,
         status: role === 'mentor' ? 'accepted' : 'pending',
-        can_reapply_next_cohort: false,
         bio: formData.bio.trim(),
         address: formData.address.trim(),
         phone_number: formData.phone_number.trim(),
@@ -279,9 +280,8 @@ export default function Signup() {
                         <button
                           key={opt}
                           onClick={() => toggleInterest(opt)}
-                          type="button"
                           className={`px-3 py-2 rounded-lg border text-sm text-left transition-all ${
-                            formData.interests[0] === opt
+                            formData.interests.includes(opt)
                               ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
                               : 'border-white/10 text-muted-foreground hover:border-white/20'
                           }`}
@@ -290,7 +290,6 @@ export default function Signup() {
                         </button>
                       ))}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">Select the one track you want to focus on for your capstone.</p>
                   </div>
 
                   <div>

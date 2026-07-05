@@ -43,14 +43,9 @@
           "CyberSecurity",
           "BioTech",
           "Finance",
-          "Data Science",
-          "AI"
+          "Data Science"
         ]
       }
-    },
-    "can_reapply_next_cohort": {
-      "type": "boolean",
-      "default": false
     },
     "experience_level": {
       "type": "string",
