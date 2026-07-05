@@ -60,6 +60,7 @@ export default function Landing() {
   const dashboardPath = currentUser?.role === 'mentor' ? '/mentor' : '/student';
   const rotatingHeroWords = ['Tech', 'BioMed', 'Finance', 'Data Science'];
   const learnMoreUrl = 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?usp=sharing';
+  const leadershipUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdB1B02Oo6QB8JgNVoTLlVNcxNH99-SjppRDdo03qHRmvXEyA/viewform?usp=dialog';
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -192,6 +193,13 @@ export default function Landing() {
               </Button>
             </motion.div>
           </Link>
+          <a href={leadershipUrl} target="_blank" rel="noreferrer noopener">
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
+              <Button size="lg" variant="secondary" className="bg-slate-800 border border-slate-700 text-white font-semibold px-10 text-base h-12 hover:bg-slate-700">
+                Leadership Application
+              </Button>
+            </motion.div>
+          </a>
           <a href={learnMoreUrl} target="_blank" rel="noreferrer noopener">
             <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
               <Button size="lg" variant="outline" className="border-cyan-500/30 bg-cyan-500/5 hover:bg-cyan-500/10 text-cyan-300 font-semibold px-10 text-base h-12">
@@ -485,6 +493,8 @@ export default function Landing() {
           <div className="flex flex-col items-center md:items-end gap-2 text-xs text-muted-foreground">
             <a href="https://www.linkedin.com/company/cybersyntax-hub" target="_blank" rel="noreferrer noopener" className="hover:text-foreground transition-colors">LinkedIn</a>
             <a href="https://www.facebook.com/profile.php?id=61591740567974" target="_blank" rel="noreferrer noopener" className="hover:text-foreground transition-colors">Facebook</a>
+            <a href="https://discord.gg/jDnNAJZFT" target="_blank" rel="noreferrer noopener" className="hover:text-foreground transition-colors">Discord Server</a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdB1B02Oo6QB8JgNVoTLlVNcxNH99-SjppRDdo03qHRmvXEyA/viewform?usp=dialog" target="_blank" rel="noreferrer noopener" className="hover:text-foreground transition-colors">Leadership Team Application</a>
             <p className="text-xs text-slate-500">© 2025 CyberSyntax Hub. All rights reserved.</p>
           </div>
         </div>
