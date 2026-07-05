@@ -31,9 +31,13 @@ export function AppAuthProvider({ children }) {
   const signup = async (data) => {
     const existing = await base44.entities.AppUser.filter({ email: data.email });
     if (existing.length > 0) {
-      const existingUser = existing[0];
-      if (existingUser.status === 'rejected') {
-        const updated = await base44.entities.AppUser.update(existingUser.id, { ...data, status: 'pending' });
+      const previous = existing[0];
+      if (previous.status === 'rejected' && previous.can_reapply_next_cohort) {
+        const updated = await base44.entities.AppUser.update(previous.id, {
+          ...data,
+          status: 'pending',
+          can_reapply_next_cohort: false,
+        });
         setCurrentUser(updated);
         localStorage.setItem('cybersyntax_user', JSON.stringify(updated));
         return updated;

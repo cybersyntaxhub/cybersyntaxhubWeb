@@ -8,6 +8,7 @@ import moment from 'moment';
 
 export default function MentorApplications() {
   const [applications, setApplications] = useState([]);
+  const [rejectedApplications, setRejectedApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
   const { toast } = useToast();
@@ -15,14 +16,24 @@ export default function MentorApplications() {
   useEffect(() => { loadApps(); }, []);
 
   const loadApps = async () => {
-    const students = await base44.entities.AppUser.filter({ role: 'student', status: 'pending' }, '-created_date');
+    const [students, rejected] = await Promise.all([
+      base44.entities.AppUser.filter({ role: 'student', status: 'pending' }, '-created_date'),
+      base44.entities.AppUser.filter({ role: 'student', status: 'rejected' }, '-created_date'),
+    ]);
     setApplications(students || []);
+    setRejectedApplications(rejected || []);
     setLoading(false);
   };
 
   const handleDecision = async (id, status) => {
     await base44.entities.AppUser.update(id, { status });
     toast({ title: status === 'accepted' ? 'Student Accepted!' : 'Application Rejected' });
+    loadApps();
+  };
+
+  const handleAllowReapply = async (id, allow) => {
+    await base44.entities.AppUser.update(id, { can_reapply_next_cohort: allow });
+    toast({ title: allow ? 'Next-cohort reapply enabled' : 'Reapply eligibility removed' });
     loadApps();
   };
 
@@ -106,6 +117,44 @@ export default function MentorApplications() {
           ))}
         </div>
       )}
+
+      <section>
+        <h2 className="text-xl font-semibold mb-4">Rejected Applicants</h2>
+        {rejectedApplications.length === 0 ? (
+          <div className="text-center py-16 text-muted-foreground">
+            <UserX className="w-10 h-10 mx-auto mb-3 opacity-30" />
+            <p>No rejected applicants yet.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {rejectedApplications.map((app, i) => (
+              <motion.div
+                key={app.id}
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="rounded-xl border border-white/5 bg-card overflow-hidden"
+              >
+                <div className="p-4 flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">{app.full_name}</p>
+                    <p className="text-xs text-muted-foreground">{app.email} · {moment(app.created_date).fromNow()}</p>
+                  </div>
+                  <span className="rounded-full px-3 py-1 text-xs font-semibold text-red-400 bg-red-500/10">Rejected</span>
+                </div>
+                <div className="px-4 pb-4 border-t border-white/5 pt-3 flex flex-col gap-3">
+                  <p className="text-sm text-muted-foreground">Allow this student to reapply in the next Summer Cohort.</p>
+                  <Button
+                    onClick={() => handleAllowReapply(app.id, !app.can_reapply_next_cohort)}
+                    className={app.can_reapply_next_cohort ? 'bg-emerald-500 hover:bg-emerald-400 text-black text-sm' : 'bg-cyan-500 hover:bg-cyan-400 text-black text-sm'}
+                  >
+                    {app.can_reapply_next_cohort ? 'Disable Next-Cohort Reapply' : 'Enable Next-Cohort Reapply'}
+                  </Button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
   );
 }
