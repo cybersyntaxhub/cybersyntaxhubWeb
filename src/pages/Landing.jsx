@@ -8,16 +8,17 @@ import ParticleBackground from '@/components/ParticleBackground';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 
 const tracks = [
-  { name: 'CyberSecurity', desc: 'Master ethical hacking, threat analysis, and defense systems at the cutting edge.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60' },
-  { name: 'BioTech', desc: 'Explore bioinformatics, genomics, and the future of computational biology.', Icon: BioTechIcon, color: '#39ff14', bg: 'from-green-500/10 to-green-500/0', border: 'border-green-500/20 hover:border-green-500/60' },
-  { name: 'Finance', desc: 'Quantitative analysis, algorithmic trading, DeFi, and modern fintech systems.', Icon: FinanceIcon, color: '#ffd700', bg: 'from-yellow-500/10 to-yellow-500/0', border: 'border-yellow-500/20 hover:border-yellow-500/60' },
-  { name: 'Data Science', desc: 'Build deep expertise in ML, AI, neural networks, and large-scale analytics.', Icon: DataScienceIcon, color: '#a855f7', bg: 'from-purple-500/10 to-purple-500/0', border: 'border-purple-500/20 hover:border-purple-500/60' },
+  { name: 'CyberSecurity', desc: 'Master ethical hacking, threat analysis, and defense systems at the cutting edge.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.2fmno0j90s7z' },
+  { name: 'AI', desc: 'Explore applied machine learning, intelligent systems, and practical AI product thinking.', Icon: DataScienceIcon, color: '#a855f7', bg: 'from-purple-500/10 to-purple-500/0', border: 'border-purple-500/20 hover:border-purple-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.sndvrxn4hr8r' },
+  { name: 'Finance', desc: 'Quantitative analysis, algorithmic trading, DeFi, and modern fintech systems.', Icon: FinanceIcon, color: '#ffd700', bg: 'from-yellow-500/10 to-yellow-500/0', border: 'border-yellow-500/20 hover:border-yellow-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.maakuwfwdfa1' },
+  { name: 'Data Science', desc: 'Build deep expertise in analytics, experimentation, and data-driven problem solving.', Icon: DataScienceIcon, color: '#8b5cf6', bg: 'from-fuchsia-500/10 to-fuchsia-500/0', border: 'border-fuchsia-500/20 hover:border-fuchsia-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.hafbia94qyj8' },
+  { name: 'BioMed', desc: 'Investigate biomedical innovation, health technology, and research-driven discovery.', Icon: BioTechIcon, color: '#39ff14', bg: 'from-green-500/10 to-green-500/0', border: 'border-green-500/20 hover:border-green-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.i8eo6ds87x36' },
 ];
 
 const stats = [
   { val: '500+', label: 'Students Enrolled', icon: Users },
   { val: '50+', label: 'Expert Mentors', icon: Brain },
-  { val: '4', label: 'Specialized Tracks', icon: Code2 },
+  { val: '5', label: 'Specialized Tracks', icon: Code2 },
   { val: '95%', label: 'Success Rate', icon: TrendingUp },
 ];
 
@@ -56,7 +57,8 @@ export default function Landing() {
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const heroY = useTransform(scrollY, [0, 400], [0, -60]);
   const dashboardPath = currentUser?.role === 'mentor' ? '/mentor' : '/student';
-  const rotatingHeroWords = ['tech', 'bio', 'finance', 'data science'];
+  const rotatingHeroWords = ['Tech', 'BioMed', 'Finance', 'Data Science'];
+  const learnMoreUrl = 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?usp=sharing';
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -186,6 +188,13 @@ export default function Landing() {
               </Button>
             </motion.div>
           </Link>
+          <a href={learnMoreUrl} target="_blank" rel="noreferrer noopener">
+            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
+              <Button size="lg" variant="outline" className="border-cyan-500/30 bg-cyan-500/5 hover:bg-cyan-500/10 text-cyan-300 font-semibold px-10 text-base h-12">
+                Learn More
+              </Button>
+            </motion.div>
+          </a>
         </motion.div>
 
         {/* Trusted by line */}
@@ -221,16 +230,19 @@ export default function Landing() {
           <span className="inline-block px-3 py-1 rounded-full border border-white/10 text-xs font-mono text-muted-foreground tracking-wider uppercase mb-4">
             Specializations
           </span>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight">Four Tracks. Infinite Potential.</h2>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight">Five Tracks. Infinite Potential.</h2>
           <p className="mt-4 text-muted-foreground text-lg max-w-xl mx-auto">
             Choose your path and get matched with mentors who've built careers in your field.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-5 max-w-7xl mx-auto">
           {tracks.map((track, i) => (
-            <motion.div
+            <motion.a
               key={track.name}
+              href={track.link}
+              target="_blank"
+              rel="noreferrer noopener"
               custom={i}
               variants={fadeUp}
               initial="hidden"
@@ -239,7 +251,7 @@ export default function Landing() {
               whileHover={{ y: -10, transition: { duration: 0.25, ease: 'easeOut' } }}
               onHoverStart={() => setActiveTrack(track.name)}
               onHoverEnd={() => setActiveTrack(null)}
-              className={`relative group p-8 rounded-2xl border bg-gradient-to-b ${track.bg} ${track.border} transition-all duration-300 cursor-default overflow-hidden`}
+              className={`relative group p-8 rounded-2xl border bg-gradient-to-b ${track.bg} ${track.border} transition-all duration-300 cursor-pointer overflow-hidden`}
             >
               {/* Glow bg */}
               <motion.div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"
@@ -262,7 +274,7 @@ export default function Landing() {
                 <span>Explore track</span>
                 <ArrowRight className="w-3 h-3" />
               </motion.div>
-            </motion.div>
+            </motion.a>
           ))}
         </div>
       </section>
