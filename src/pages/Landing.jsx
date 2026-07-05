@@ -279,6 +279,84 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* CAPSTONE MENTORSHIP */}
+      <section className="relative z-10 px-6 md:px-16 py-24">
+        <div className="max-w-5xl mx-auto text-center mb-14">
+          <span className="inline-block px-3 py-1 rounded-full border border-white/10 text-xs font-mono text-muted-foreground tracking-wider uppercase mb-4">
+            Capstone Mentorship
+          </span>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight">Complete the program with optional 1:1 mentorship</h2>
+          <p className="mt-4 text-muted-foreground text-lg max-w-2xl mx-auto">
+            After finishing all five specializations, CyberSyntaxHub gives you the choice to continue with a capstone project.
+            Work one-on-one with a mentor to build programming skills in the field and launch a portfolio-worthy project.
+          </p>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+          <div className="rounded-[2rem] border border-white/10 bg-gradient-to-br from-slate-950/60 to-slate-900/80 p-10 shadow-2xl shadow-cyan-500/10">
+            <div className="flex items-center justify-between gap-4 mb-8">
+              <div>
+                <p className="text-xs uppercase tracking-[0.24em] text-cyan-400 font-semibold">Optional continuation</p>
+                <h3 className="text-3xl font-black mt-4">Capstone Project & Mentorship</h3>
+              </div>
+              <div className="h-14 w-14 rounded-3xl bg-cyan-500/10 flex items-center justify-center text-cyan-300">
+                <Code2 className="w-7 h-7" />
+              </div>
+            </div>
+            <p className="text-muted-foreground leading-relaxed text-base mb-8">
+              Choose an extra mentorship experience where you learn to program in your chosen field, build a real-world project, and receive expert feedback throughout the journey.
+            </p>
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
+              <p className="text-sm uppercase tracking-[0.24em] text-muted-foreground mb-3">What you get</p>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li>1:1 mentor coaching with project guidance</li>
+                <li>Hands-on field-focused programming practice</li>
+                <li>Portfolio-ready capstone deliverable</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="grid gap-4">
+            <div className="rounded-3xl border border-white/10 bg-card p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-sm font-semibold">Real Product Work</div>
+                <div className="h-10 w-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+                  <Users className="w-5 h-5" />
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">Build a field-specific project that demonstrates your programming capability to future employers or academic partners.</p>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-card p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-sm font-semibold">Mentor Coaching</div>
+                <div className="h-10 w-10 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-400">
+                  <Brain className="w-5 h-5" />
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">Receive direct guidance on technical decisions, workflows, and career-ready deliverables.</p>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-card p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-sm font-semibold">Industry Skills</div>
+                <div className="h-10 w-10 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+                  <Shield className="w-5 h-5" />
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">Gain practical programming experience in the context of security, AI, finance, BioMed or data science.</p>
+            </div>
+            <div className="rounded-3xl border border-white/10 bg-card p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="text-sm font-semibold">Career Preparation</div>
+                <div className="h-10 w-10 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+                  <BookOpen className="w-5 h-5" />
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">Build confidence with mentor feedback and a completed capstone showcase for future steps.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* STATS */}
       <section className="relative z-10 px-6 md:px-16 py-20">
         <div className="max-w-5xl mx-auto">
@@ -384,17 +462,22 @@ export default function Landing() {
       </section>
 
       {/* FOOTER */}
-      <footer className="relative z-10 border-t border-white/[0.05] px-6 md:px-16 py-10">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+      <footer className="relative z-10 border-t border-white/[0.05] px-6 md:px-16 py-14">
+        <div className="max-w-6xl mx-auto grid gap-10 md:grid-cols-[auto_1fr_auto] items-center">
           <div className="flex items-center gap-2.5">
             <img src="/logo.png" alt="Logo" className="w-7 h-7 object-contain" />
             <span className="text-sm font-bold">CyberSyntax<span className="text-cyan-400">Hub</span></span>
           </div>
-          <p className="text-xs text-muted-foreground">© 2025 CyberSyntax Hub. All rights reserved.</p>
-          <div className="flex gap-6 text-xs text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
-            <a href="#" className="hover:text-foreground transition-colors">Terms</a>
-            <a href="#" className="hover:text-foreground transition-colors">Contact</a>
+
+          <div className="text-sm text-muted-foreground space-y-3 text-center md:text-left">
+            <p>Email: <a href="mailto:cybersyntaxhub@gmail.com" className="text-cyan-300 hover:text-cyan-200">cybersyntaxhub@gmail.com</a></p>
+            <p>Instagram: <a href="https://www.instagram.com/cybersyntaxhub" target="_blank" rel="noreferrer noopener" className="text-cyan-300 hover:text-cyan-200">@cybersyntaxhub</a></p>
+          </div>
+
+          <div className="flex flex-col items-center md:items-end gap-2 text-xs text-muted-foreground">
+            <a href="https://www.linkedin.com/company/cybersyntax-hub" target="_blank" rel="noreferrer noopener" className="hover:text-foreground transition-colors">LinkedIn</a>
+            <a href="https://www.facebook.com/profile.php?id=61591740567974" target="_blank" rel="noreferrer noopener" className="hover:text-foreground transition-colors">Facebook</a>
+            <p className="text-xs text-slate-500">© 2025 CyberSyntax Hub. All rights reserved.</p>
           </div>
         </div>
       </footer>
