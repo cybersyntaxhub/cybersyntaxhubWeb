@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -12,8 +12,14 @@ export default function Signin() {
   const [passcode, setPasscode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAppAuth();
+  const { login, currentUser, loading: authLoading } = useAppAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!authLoading && currentUser) {
+      navigate(currentUser.role === 'mentor' ? '/mentor' : '/student');
+    }
+  }, [authLoading, currentUser, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

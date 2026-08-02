@@ -1,4 +1,4 @@
-﻿create table if not exists public.entity_records (
+create table if not exists public.entity_records (
   id text primary key,
   entity text not null,
   data jsonb not null default '{}'::jsonb,

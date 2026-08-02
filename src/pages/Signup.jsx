@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -7,11 +7,18 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useAppAuth } from '@/lib/appAuth.jsx';
+import { currentCohort } from '@/lib/cohort';
 import { base44 } from '@/api/base44Client';
-import { GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const interestOptions = ['CyberSecurity', 'BioTech', 'Finance', 'Data Science'];
+
+const preferredTrackOptions = [
+  { label: 'Course', value: 'course' },
+  { label: 'Research', value: 'research' },
+  { label: 'Capstone Mentorship', value: 'capstone' },
+];
 
 // The educator key is checked on the server so it's never readable in the
 // browser bundle. See POST /api/validate-educator-key in server.js.
@@ -50,39 +57,20 @@ export default function Signup() {
   const [role, setRole] = useState(initialRole || 'student');
   const [formData, setFormData] = useState({
     full_name: '', email: '', passcode: '', confirm_passcode: '',
-    educator_key: '', bio: '', interests: [], experience_level: 'beginner',
-    goals: '', linkedin_url: '', github_url: '',
+    educator_key: '', bio: '', address: '', phone_number: '', grade: '', school_name: '', how_heard: '', fit_explanation: '', interests: [], preferred_track: '', excitement: '', fundamental_course: '', external_experience: '', consider_regular: '', experience_level: 'beginner', goals: '', linkedin_url: '', github_url: '',
   });
   const [resumeFile, setResumeFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [prefilled, setPrefilled] = useState(false);
-  const { signup } = useAppAuth();
+  const { signup, currentUser, loading: authLoading } = useAppAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const checkFormSubmission = async (email) => {
-    try {
-      const submissions = await base44.entities.FormSubmission.filter({ email });
-      if (submissions.length > 0) {
-        const sub = submissions[0];
-        const mappedInterests = mapInterest(sub.interests);
-        setFormData(prev => ({
-          ...prev,
-          full_name: sub.full_name || prev.full_name,
-          bio: sub.bio || prev.bio,
-          goals: sub.goals || prev.goals,
-          linkedin_url: sub.linkedin_url || prev.linkedin_url,
-          interests: mappedInterests.length > 0 ? mappedInterests : prev.interests,
-        }));
-        setPrefilled(true);
-        toast({ title: 'Application found!', description: 'We pre-filled your profile from your Google Form submission.' });
-      }
-    } catch (e) {
-      // Silently continue — no form submission found
-      console.log('No form submission found for', email);
+  useEffect(() => {
+    if (!authLoading && currentUser) {
+      navigate(currentUser.role === 'mentor' ? '/mentor' : '/student');
     }
-  };
+  }, [authLoading, currentUser, navigate]);
 
   const update = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
 
@@ -95,6 +83,38 @@ export default function Signup() {
     }));
   };
 
+  const validateStudentApplication = () => {
+    const requiredFields = [
+      formData.bio.trim(),
+      formData.address.trim(),
+      formData.phone_number.trim(),
+      formData.grade.trim(),
+      formData.school_name.trim(),
+      formData.how_heard.trim(),
+      formData.fit_explanation.trim(),
+      formData.goals.trim(),
+      formData.preferred_track.trim(),
+      formData.excitement.trim(),
+    ];
+
+    if (requiredFields.some(value => !value) || formData.interests.length === 0) {
+      return 'Please fill in every required field, choose what excites you most, and select your preferred track.';
+    }
+
+    if (formData.preferred_track === 'capstone') {
+      const capstoneFields = [
+        formData.fundamental_course.trim(),
+        formData.external_experience.trim(),
+        formData.consider_regular.trim(),
+      ];
+      if (capstoneFields.some(value => !value)) {
+        return 'For capstone mentorship, please answer all capstone-specific questions.';
+      }
+    }
+
+    return '';
+  };
+
   const handleSubmit = async () => {
     setError('');
     if (formData.passcode !== formData.confirm_passcode) {
@@ -105,6 +125,15 @@ export default function Signup() {
       setError('Invalid educator key');
       return;
     }
+
+    if (role === 'student') {
+      const studentError = validateStudentApplication();
+      if (studentError) {
+        setError(studentError);
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       let resume_url = '';
@@ -114,18 +143,31 @@ export default function Signup() {
       }
 
       const userData = {
-        full_name: formData.full_name,
-        email: formData.email,
+        full_name: formData.full_name.trim(),
+        email: formData.email.trim(),
         passcode: formData.passcode,
         role,
         status: role === 'mentor' ? 'accepted' : 'pending',
-        bio: formData.bio,
+        bio: formData.bio.trim(),
+        address: formData.address.trim(),
+        phone_number: formData.phone_number.trim(),
+        grade: formData.grade.trim(),
+        school_name: formData.school_name.trim(),
+        how_heard: formData.how_heard.trim(),
+        fit_explanation: formData.fit_explanation.trim(),
         interests: formData.interests,
+        preferred_track: formData.preferred_track,
+        excitement: formData.excitement.trim(),
+        fundamental_course: formData.fundamental_course.trim(),
+        external_experience: formData.external_experience.trim(),
+        consider_regular: formData.consider_regular,
         experience_level: formData.experience_level,
-        goals: formData.goals,
-        linkedin_url: formData.linkedin_url,
-        github_url: formData.github_url,
+        goals: formData.goals.trim(),
+        linkedin_url: formData.linkedin_url.trim(),
+        github_url: formData.github_url.trim(),
         resume_url,
+        applied_cohort: role === 'student' ? currentCohort : undefined,
+        next_cohort_eligible: false,
       };
 
       await signup(userData);
@@ -157,7 +199,6 @@ export default function Signup() {
 
         <div className="rounded-2xl border border-white/10 bg-card p-8">
           <AnimatePresence mode="wait">
-            {/* Step 0: Choose role */}
             {step === 0 && (
               <motion.div key="role" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3 }}>
                 <h2 className="text-2xl font-bold mb-2 text-center">Join CyberSyntax Hub</h2>
@@ -183,7 +224,6 @@ export default function Signup() {
               </motion.div>
             )}
 
-            {/* Step 1: Account info */}
             {step === 1 && (
               <motion.div key="account" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3 }}>
                 <button onClick={() => setStep(0)} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-4">
@@ -227,15 +267,12 @@ export default function Signup() {
 
                 <Button
                   className="w-full mt-6 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
-                  disabled={!formData.full_name || !formData.email || !formData.passcode || !formData.confirm_passcode}
+                  disabled={!formData.full_name.trim() || !formData.email.trim() || !formData.passcode || !formData.confirm_passcode}
                   onClick={async () => {
                     setError('');
                     if (formData.passcode !== formData.confirm_passcode) { setError('Passcodes do not match'); return; }
                     if (role === 'mentor' && !(await validateEducatorKey(formData.educator_key))) { setError('Invalid educator key'); return; }
-                    if (role === 'mentor') { handleSubmit(); } else {
-                      await checkFormSubmission(formData.email);
-                      setStep(2);
-                    }
+                    if (role === 'mentor') { handleSubmit(); } else { setStep(2); }
                   }}
                 >
                   {role === 'mentor' ? 'Create Mentor Account' : 'Next: Complete Profile'}
@@ -244,33 +281,73 @@ export default function Signup() {
               </motion.div>
             )}
 
-            {/* Step 2: Student profile */}
             {step === 2 && role === 'student' && (
               <motion.div key="profile" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.3 }}>
                 <button onClick={() => setStep(1)} className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 mb-4">
                   <ArrowLeft className="w-4 h-4" /> Back
                 </button>
-                <h2 className="text-2xl font-bold mb-1">Complete Your Application</h2>
-                <p className="text-muted-foreground mb-4 text-sm">Tell us about yourself so mentors can review your profile.</p>
-
-                {prefilled && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-                    className="flex items-center gap-2 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-6"
-                  >
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    <p className="text-xs text-emerald-400">Fields pre-filled from your Google Form submission. Feel free to edit anything below.</p>
-                  </motion.div>
-                )}
+                <h2 className="text-2xl font-bold mb-1">Complete Your {currentCohort} Application</h2>
+                <p className="text-muted-foreground mb-4 text-sm">Tell us about yourself so mentors can review your application for {currentCohort}.</p>
 
                 <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-3">
+                    <div>
+                      <Label>Address</Label>
+                      <Input value={formData.address} onChange={e => update('address', e.target.value)} placeholder="Street, city, state" className="mt-1 bg-background border-white/10" />
+                    </div>
+                    <div>
+                      <Label>Phone Number</Label>
+                      <Input value={formData.phone_number} onChange={e => update('phone_number', e.target.value)} placeholder="(555) 123-4567" className="mt-1 bg-background border-white/10" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Grade Level</Label>
+                      <Input value={formData.grade} onChange={e => update('grade', e.target.value)} placeholder="e.g. 11th grade" className="mt-1 bg-background border-white/10" />
+                    </div>
+                    <div>
+                      <Label>School / Institution</Label>
+                      <Input value={formData.school_name} onChange={e => update('school_name', e.target.value)} placeholder="School or program name" className="mt-1 bg-background border-white/10" />
+                    </div>
+                  </div>
+
                   <div>
-                    <Label>Bio</Label>
+                    <Label>How did you hear about CyberSyntaxHub?</Label>
+                    <Input value={formData.how_heard} onChange={e => update('how_heard', e.target.value)} placeholder="Friend, school, social media, event..." className="mt-1 bg-background border-white/10" />
+                  </div>
+
+                  <div>
+                    <Label>Short Bio</Label>
                     <Textarea value={formData.bio} onChange={e => update('bio', e.target.value)} placeholder="A brief intro about yourself..." className="mt-1 bg-background border-white/10 min-h-[80px]" />
                   </div>
 
                   <div>
-                    <Label className="mb-2 block">Interests</Label>
+                    <Label>Why do you want to join CyberSyntaxHub?</Label>
+                    <Textarea value={formData.fit_explanation} onChange={e => update('fit_explanation', e.target.value)} placeholder="Share why this program fits your goals and what you hope to contribute." className="mt-1 bg-background border-white/10 min-h-[80px]" />
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">Preferred Track</Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      {preferredTrackOptions.map(option => (
+                        <button
+                          key={option.value}
+                          onClick={() => update('preferred_track', option.value)}
+                          className={`px-3 py-3 rounded-lg border text-sm text-left transition-all ${
+                            formData.preferred_track === option.value
+                              ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                              : 'border-white/10 text-muted-foreground hover:border-white/20'
+                          }`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="mb-2 block">What excites you most?</Label>
                     <div className="grid grid-cols-2 gap-2">
                       {interestOptions.map(opt => (
                         <button
@@ -286,6 +363,43 @@ export default function Signup() {
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  {formData.preferred_track === 'capstone' && (
+                    <div className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <div className="text-sm font-semibold text-cyan-200">Capstone Mentorship Questions</div>
+                      <div>
+                        <Label>Which fundamental course did you complete and are looking for capstone alignment with?</Label>
+                        <Textarea value={formData.fundamental_course} onChange={e => update('fundamental_course', e.target.value)} placeholder="If none, write N/A" className="mt-1 bg-background border-white/10 min-h-[80px]" />
+                      </div>
+                      <div>
+                        <Label>If you did not complete any courses, what external experience do you have for capstone mentorship?</Label>
+                        <Textarea value={formData.external_experience} onChange={e => update('external_experience', e.target.value)} placeholder="If none, write N/A" className="mt-1 bg-background border-white/10 min-h-[80px]" />
+                      </div>
+                      <div>
+                        <Label>Would you like to be considered for regular mentorship if this capstone application is not accepted?</Label>
+                        <div className="flex gap-2 mt-2">
+                          {['yes', 'no'].map(option => (
+                            <button
+                              key={option}
+                              onClick={() => update('consider_regular', option)}
+                              className={`flex-1 px-3 py-2 rounded-lg border text-sm capitalize transition-all ${
+                                formData.consider_regular === option
+                                  ? 'border-cyan-500 bg-cyan-500/10 text-cyan-400'
+                                  : 'border-white/10 text-muted-foreground hover:border-white/20'
+                              }`}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <Label>Goals</Label>
+                    <Textarea value={formData.goals} onChange={e => update('goals', e.target.value)} placeholder="What do you hope to achieve?" className="mt-1 bg-background border-white/10 min-h-[60px]" />
                   </div>
 
                   <div>
@@ -305,11 +419,6 @@ export default function Signup() {
                         </button>
                       ))}
                     </div>
-                  </div>
-
-                  <div>
-                    <Label>Goals</Label>
-                    <Textarea value={formData.goals} onChange={e => update('goals', e.target.value)} placeholder="What do you hope to achieve?" className="mt-1 bg-background border-white/10 min-h-[60px]" />
                   </div>
 
                   <div>
@@ -347,7 +456,7 @@ export default function Signup() {
 
                 <Button
                   className="w-full mt-6 bg-cyan-500 hover:bg-cyan-400 text-black font-semibold"
-                  disabled={loading || formData.interests.length === 0}
+                  disabled={loading}
                   onClick={handleSubmit}
                 >
                   {loading ? 'Submitting...' : 'Submit Application'}
