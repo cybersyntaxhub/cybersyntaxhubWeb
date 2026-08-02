@@ -12,14 +12,42 @@ import { base44 } from '@/api/base44Client';
 import { GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const EDUCATOR_KEY = 'CYBERSYNTAX2025';
-
 const interestOptions = ['CyberSecurity', 'BioTech', 'Finance', 'Data Science'];
+
 const preferredTrackOptions = [
   { label: 'Course', value: 'course' },
   { label: 'Research', value: 'research' },
   { label: 'Capstone Mentorship', value: 'capstone' },
 ];
+
+// The educator key is checked on the server so it's never readable in the
+// browser bundle. See POST /api/validate-educator-key in server.js.
+const validateEducatorKey = async (key) => {
+  try {
+    const res = await fetch('/api/validate-educator-key', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key }),
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return !!data.valid;
+  } catch (e) {
+    return false;
+  }
+};
+
+// Map Google Form interest strings to our internal values
+const mapInterest = (raw) => {
+  if (!raw) return [];
+  const str = typeof raw === 'string' ? raw : String(raw);
+  const mapped = [];
+  if (/cyber/i.test(str)) mapped.push('CyberSecurity');
+  if (/bio/i.test(str)) mapped.push('BioTech');
+  if (/finance/i.test(str)) mapped.push('Finance');
+  if (/data/i.test(str)) mapped.push('Data Science');
+  return mapped;
+};
 
 export default function Signup() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -93,7 +121,7 @@ export default function Signup() {
       setError('Passcodes do not match');
       return;
     }
-    if (role === 'mentor' && formData.educator_key !== EDUCATOR_KEY) {
+    if (role === 'mentor' && !(await validateEducatorKey(formData.educator_key))) {
       setError('Invalid educator key');
       return;
     }
@@ -243,7 +271,7 @@ export default function Signup() {
                   onClick={async () => {
                     setError('');
                     if (formData.passcode !== formData.confirm_passcode) { setError('Passcodes do not match'); return; }
-                    if (role === 'mentor' && formData.educator_key !== EDUCATOR_KEY) { setError('Invalid educator key'); return; }
+                    if (role === 'mentor' && !(await validateEducatorKey(formData.educator_key))) { setError('Invalid educator key'); return; }
                     if (role === 'mentor') { handleSubmit(); } else { setStep(2); }
                   }}
                 >

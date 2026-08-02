@@ -24,7 +24,28 @@ const ENTITY_NAMES = new Set([
 ]);
 
 app.set('trust proxy', 1);
-app.use(cors());
+
+// Explicit allowlist so CORS behavior is easy to verify/debug. Add any other
+// frontend origins (e.g. a preview deployment URL) via ALLOWED_ORIGINS env
+// var, comma-separated.
+const defaultOrigins = [
+  'https://cybersyntaxhub.vercel.app',
+  'http://localhost:5173'
+];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+  : defaultOrigins;
+
+app.use(cors({
+  origin(origin, callback) {
+    // Allow non-browser requests (no Origin header, e.g. curl/health checks)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    console.warn(`[CORS] Blocked origin: ${origin}`);
+    return callback(new Error(`Origin ${origin} not allowed by CORS`));
+  }
+}));
 app.use(express.json());
 
 const uploadDir = path.join(__dirname, 'uploads');
@@ -138,6 +159,17 @@ function handleRouteError(res, error) {
   console.error(error);
   res.status(error.status || 500).json({ error: error.message || 'Internal server error' });
 }
+
+// Mentor/educator signups must be approved with a key that only the server knows.
+// Do NOT move this check into frontend code — anything in the client bundle is
+// readable by anyone, which previously let visitors self-approve as mentors.
+const EDUCATOR_KEY = process.env.EDUCATOR_KEY || 'CYBERSYNTAX2025';
+
+app.post('/api/validate-educator-key', (req, res) => {
+  const { key } = req.body || {};
+  const valid = typeof key === 'string' && key === EDUCATOR_KEY;
+  res.json({ valid });
+});
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
   if (!req.file) {

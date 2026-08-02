@@ -7,6 +7,9 @@ import ScrollToTop from './components/ScrollToTop';
 import { AppAuthProvider } from '@/lib/appAuth.jsx';
 
 import Landing from '@/pages/Landing';
+import About from '@/pages/About';
+import Contact from '@/pages/Contact';
+import Donate from '@/pages/Donate';
 import Signup from '@/pages/Signup';
 import Signin from '@/pages/Signin';
 import StudentDashboard from '@/pages/StudentDashboard';
@@ -26,6 +29,9 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/donate" element={<Donate />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/signin" element={<Signin />} />
 

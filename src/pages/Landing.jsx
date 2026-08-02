@@ -5,6 +5,9 @@ import { ArrowRight, Users, BookOpen, Shield, ChevronDown, Star, Code2, Brain, T
 import { Button } from '@/components/ui/button';
 import { CyberSecurityIcon, BioTechIcon, FinanceIcon, DataScienceIcon } from '@/components/AnimatedIcons';
 import ParticleBackground from '@/components/ParticleBackground';
+import SiteNav from '@/components/SiteNav';
+import SiteFooter from '@/components/SiteFooter';
+import { usePageTitle } from '@/hooks/use-page-title';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 import { currentCohort } from '@/lib/cohort';
 
@@ -51,6 +54,7 @@ function CountUp({ target, suffix = '' }) {
 }
 
 export default function Landing() {
+  usePageTitle();
   const [activeTrack, setActiveTrack] = useState(null);
   const [heroWordIndex, setHeroWordIndex] = useState(0);
   const { currentUser } = useAppAuth();
@@ -78,51 +82,7 @@ export default function Landing() {
       <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="fixed bottom-0 right-0 w-[600px] h-[400px] bg-purple-500/4 rounded-full blur-[100px] pointer-events-none z-0" />
 
-      {/* NAV */}
-      <motion.nav
-        initial={{ y: -60, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-20 flex items-center justify-between px-6 md:px-16 py-5 border-b border-white/[0.04] backdrop-blur-sm"
-      >
-        <div className="flex items-center gap-2.5">
-          <motion.img
-            src="/logo.png"
-            alt="Logo"
-            className="w-9 h-9 object-contain"
-            whileHover={{ scale: 1.08, rotate: 5 }} transition={{ type: 'spring', stiffness: 400 }}
-          />
-          <span className="text-lg font-bold tracking-tight">CyberSyntax<span className="text-cyan-400">Hub</span></span>
-        </div>
-
-        <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          {['Tracks', 'How it Works', 'Mentors'].map(item => (
-            <motion.a key={item} href={`#${item.toLowerCase().replace(/ /g, '-')}`}
-              className="hover:text-foreground transition-colors cursor-pointer"
-              whileHover={{ y: -1 }}>
-              {item}
-            </motion.a>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-3">
-          {currentUser ? (
-            <Link to={dashboardPath}>
-              <Button variant="ghost" className="text-sm text-muted-foreground hover:text-foreground">Open Dashboard</Button>
-            </Link>
-          ) : (
-            <Link to="/signin">
-              <Button variant="ghost" className="text-sm text-muted-foreground hover:text-foreground">Sign In</Button>
-            </Link>
-          )}
-          <Link to={currentUser ? dashboardPath : '/signup'}>
-            <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-              <Button className="text-sm bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-5 shadow-lg shadow-cyan-500/20">
-                {currentUser ? 'Continue' : 'Get Started'}
-              </Button>
-            </motion.div>
-          </Link>
-        </div>
-      </motion.nav>
+      <SiteNav />
 
       {/* HERO */}
       <motion.section style={{ opacity: heroOpacity, y: heroY }}
@@ -455,7 +415,7 @@ export default function Landing() {
             Ready to level up?
           </h2>
           <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto">
-            Join ambitious students building real skills with expert mentors through CyberSyntaxHub’s structured programs.
+            Join ambitious students building real skills with expert mentors through CyberSyntaxHub's structured programs.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/signup">
@@ -477,28 +437,7 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="relative z-10 border-t border-white/[0.05] px-6 md:px-16 py-14">
-        <div className="max-w-6xl mx-auto grid gap-10 md:grid-cols-[auto_1fr_auto] items-center">
-          <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="Logo" className="w-7 h-7 object-contain" />
-            <span className="text-sm font-bold">CyberSyntax<span className="text-cyan-400">Hub</span></span>
-          </div>
-
-          <div className="text-sm text-muted-foreground space-y-3 text-center md:text-left">
-            <p>Email: <a href="mailto:cybersyntaxhub@gmail.com" className="text-cyan-300 hover:text-cyan-200">cybersyntaxhub@gmail.com</a></p>
-            <p>Instagram: <a href="https://www.instagram.com/cybersyntaxhub" target="_blank" rel="noreferrer noopener" className="text-cyan-300 hover:text-cyan-200">@cybersyntaxhub</a></p>
-          </div>
-
-          <div className="flex flex-col items-center md:items-end gap-2 text-xs text-muted-foreground">
-            <a href="https://www.linkedin.com/company/cybersyntax-hub" target="_blank" rel="noreferrer noopener" className="hover:text-foreground transition-colors">LinkedIn</a>
-            <a href="https://www.facebook.com/profile.php?id=61591740567974" target="_blank" rel="noreferrer noopener" className="hover:text-foreground transition-colors">Facebook</a>
-            <a href="https://discord.gg/jDnNAJZFT" target="_blank" rel="noreferrer noopener" className="hover:text-foreground transition-colors">Discord Server</a>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSdB1B02Oo6QB8JgNVoTLlVNcxNH99-SjppRDdo03qHRmvXEyA/viewform?usp=dialog" target="_blank" rel="noreferrer noopener" className="hover:text-foreground transition-colors">Leadership Team Application</a>
-            <p className="text-xs text-slate-500">© 2025 CyberSyntax Hub. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

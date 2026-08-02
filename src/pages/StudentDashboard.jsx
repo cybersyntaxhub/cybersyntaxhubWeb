@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 import { currentCohort } from '@/lib/cohort';
