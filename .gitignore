@@ -33,3 +33,7 @@ dist-ssr
 # Local backend data
 database.json
 uploads/
+
+# Local backend data
+database.json
+uploads/

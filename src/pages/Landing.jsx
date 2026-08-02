@@ -1,57 +1,13 @@
-import { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ArrowRight, Users, BookOpen, Shield, Zap, ChevronDown, Star, Code2, Brain, TrendingUp } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { CyberSecurityIcon, BioTechIcon, FinanceIcon, DataScienceIcon } from '@/components/AnimatedIcons';
-import ParticleBackground from '@/components/ParticleBackground';
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, Zap, LogOut } from 'lucide-react';
+import { useAppAuth } from '@/lib/appAuth.jsx';
 
-const tracks = [
-  { name: 'CyberSecurity', desc: 'Master ethical hacking, threat analysis, and defense systems at the cutting edge.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60' },
-  { name: 'BioTech', desc: 'Explore bioinformatics, genomics, and the future of computational biology.', Icon: BioTechIcon, color: '#39ff14', bg: 'from-green-500/10 to-green-500/0', border: 'border-green-500/20 hover:border-green-500/60' },
-  { name: 'Finance', desc: 'Quantitative analysis, algorithmic trading, DeFi, and modern fintech systems.', Icon: FinanceIcon, color: '#ffd700', bg: 'from-yellow-500/10 to-yellow-500/0', border: 'border-yellow-500/20 hover:border-yellow-500/60' },
-  { name: 'Data Science', desc: 'Build deep expertise in ML, AI, neural networks, and large-scale analytics.', Icon: DataScienceIcon, color: '#a855f7', bg: 'from-purple-500/10 to-purple-500/0', border: 'border-purple-500/20 hover:border-purple-500/60' },
-];
-
-const stats = [
-  { val: '500+', label: 'Students Enrolled', icon: Users },
-  { val: '50+', label: 'Expert Mentors', icon: Brain },
-  { val: '4', label: 'Specialized Tracks', icon: Code2 },
-  { val: '95%', label: 'Success Rate', icon: TrendingUp },
-];
-
-const steps = [
-  { num: '01', icon: Users, title: 'Apply & Get Matched', desc: 'Complete your profile, upload your resume, and select your interest tracks. Our mentors review every application personally.' },
-  { num: '02', icon: Shield, title: 'Get Accepted', desc: 'Once accepted, you unlock your full dashboard — announcements, direct messaging, assignments, and course content.' },
-  { num: '03', icon: BookOpen, title: 'Learn & Grow', desc: 'Work through mentor-built courses, complete assignments with real feedback, and communicate directly 1-on-1.' },
-];
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] } }),
-};
-
-function CountUp({ target, suffix = '' }) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    const num = parseInt(target);
-    if (isNaN(num)) { setCount(target); return; }
-    let start = 0;
-    const step = Math.ceil(num / 40);
-    const interval = setInterval(() => {
-      start += step;
-      if (start >= num) { setCount(num); clearInterval(interval); } else { setCount(start); }
-    }, 30);
-    return () => clearInterval(interval);
-  }, [target]);
-  return <>{typeof count === 'number' ? count : count}{suffix}</>;
-}
-
-export default function Landing() {
-  const [activeTrack, setActiveTrack] = useState(null);
-  const { scrollY } = useScroll();
-  const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
-  const heroY = useTransform(scrollY, [0, 400], [0, -60]);
+export default function MobileSidebar({ items }) {
+  const [open, setOpen] = useState(false);
+  const location = useLocation();
+  const { currentUser, logout } = useAppAuth();
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
@@ -68,12 +24,12 @@ export default function Landing() {
         className="relative z-20 flex items-center justify-between px-6 md:px-16 py-5 border-b border-white/[0.04] backdrop-blur-sm"
       >
         <div className="flex items-center gap-2.5">
-          <motion.img
-            src="/logo.png"
-            alt="Logo"
-            className="w-9 h-9 object-contain"
+          <motion.div
+            className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-700 flex items-center justify-center shadow-lg shadow-cyan-500/20"
             whileHover={{ scale: 1.08, rotate: 5 }} transition={{ type: 'spring', stiffness: 400 }}
-          />
+          >
+            <Zap className="w-5 h-5 text-black" />
+          </motion.div>
           <span className="text-lg font-bold tracking-tight">CyberSyntax<span className="text-cyan-400">Hub</span></span>
         </div>
 
@@ -312,12 +268,10 @@ export default function Landing() {
           <div className="absolute top-0 left-0 w-32 h-32 border-l border-t border-cyan-500/20 rounded-tl-3xl" />
           <div className="absolute bottom-0 right-0 w-32 h-32 border-r border-b border-purple-500/20 rounded-br-3xl" />
 
-          <motion.img
-            src="/logo.png"
-            alt="Logo"
-            className="w-16 h-16 object-contain mb-6 mx-auto"
-            animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity }}
-          />
+          <motion.div className="inline-block w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-cyan-700 flex items-center justify-center mb-6 shadow-xl shadow-cyan-500/20 mx-auto"
+            animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity }}>
+            <Zap className="w-8 h-8 text-black" />
+          </motion.div>
 
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
             Ready to level up?
@@ -349,7 +303,9 @@ export default function Landing() {
       <footer className="relative z-10 border-t border-white/[0.05] px-6 md:px-16 py-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2.5">
-            <img src="/logo.png" alt="Logo" className="w-7 h-7 object-contain" />
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-700 flex items-center justify-center">
+              <Zap className="w-4 h-4 text-black" />
+            </div>
             <span className="text-sm font-bold">CyberSyntax<span className="text-cyan-400">Hub</span></span>
           </div>
           <p className="text-xs text-muted-foreground">© 2025 CyberSyntax Hub. All rights reserved.</p>

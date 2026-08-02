@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
 import { fileURLToPath } from 'url';
+import { supabase } from "./supabase.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -111,7 +112,9 @@ function sortItems(items, sortParam) {
 // 1. Get all with sorting, limit, and query parameters filtering
 app.get('/api/entities/:entity', (req, res) => {
   const { entity } = req.params;
-  const db = readDB();
+  const { data, error } = await supabase
+  .from(table)
+  .select("*");
   if (!db[entity]) {
     return res.status(404).json({ error: `Entity ${entity} not found` });
   }
@@ -329,6 +332,13 @@ app.post('/api/webhook/google-form', (req, res) => {
   console.log(`[Webhook] Google Form submission saved for: ${submission.email}`);
   res.status(201).json({ success: true, id: submission.id });
 });
+
+const { data, error } = await supabase
+  .from("app_users")
+  .select("*");
+
+console.log("Supabase data:", data);
+console.log("Supabase error:", error);
 
 app.listen(PORT, () => {
   console.log(`Custom backend listening on port ${PORT}`);
