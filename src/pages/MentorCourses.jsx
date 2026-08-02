@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useAppAuth } from '@/lib/appAuth.jsx';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
-import { BookOpen, Plus, Trash2, GripVertical, Eye, EyeOff, ArrowLeft, PlusCircle, FileText, ClipboardList } from 'lucide-react';
+import { BookOpen, Plus, Trash2, Eye, EyeOff, ArrowLeft, PlusCircle, FileText, ClipboardList } from 'lucide-react';
 
 function generateId() {
   return Math.random().toString(36).substring(2, 10);

@@ -4,9 +4,8 @@ import { useAppAuth } from '@/lib/appAuth.jsx';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { ClipboardList, Upload, CheckCircle, Clock, Star } from 'lucide-react';
+import { ClipboardList, CheckCircle, Clock, Star } from 'lucide-react';
 import moment from 'moment';
 
 export default function StudentAssignments() {

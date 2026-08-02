@@ -5,16 +5,30 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 import { base44 } from '@/api/base44Client';
-import { Zap, GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { GraduationCap, Users, ArrowRight, ArrowLeft, Upload, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const EDUCATOR_KEY = 'CYBERSYNTAX2025';
-
 const interestOptions = ['CyberSecurity', 'BioTech', 'Finance', 'Data Science'];
+
+// The educator key is checked on the server so it's never readable in the
+// browser bundle. See POST /api/validate-educator-key in server.js.
+const validateEducatorKey = async (key) => {
+  try {
+    const res = await fetch('/api/validate-educator-key', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key }),
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return !!data.valid;
+  } catch (e) {
+    return false;
+  }
+};
 
 // Map Google Form interest strings to our internal values
 const mapInterest = (raw) => {
@@ -87,7 +101,7 @@ export default function Signup() {
       setError('Passcodes do not match');
       return;
     }
-    if (role === 'mentor' && formData.educator_key !== EDUCATOR_KEY) {
+    if (role === 'mentor' && !(await validateEducatorKey(formData.educator_key))) {
       setError('Invalid educator key');
       return;
     }
@@ -217,7 +231,7 @@ export default function Signup() {
                   onClick={async () => {
                     setError('');
                     if (formData.passcode !== formData.confirm_passcode) { setError('Passcodes do not match'); return; }
-                    if (role === 'mentor' && formData.educator_key !== EDUCATOR_KEY) { setError('Invalid educator key'); return; }
+                    if (role === 'mentor' && !(await validateEducatorKey(formData.educator_key))) { setError('Invalid educator key'); return; }
                     if (role === 'mentor') { handleSubmit(); } else {
                       await checkFormSubmission(formData.email);
                       setStep(2);

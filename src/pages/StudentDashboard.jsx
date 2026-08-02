@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { useAppAuth } from '@/lib/appAuth.jsx';
 import DashboardSidebar from '@/components/DashboardSidebar';

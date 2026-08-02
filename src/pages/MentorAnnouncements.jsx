@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/components/ui/use-toast';
-import { Megaphone, Plus, Trash2, Image, X } from 'lucide-react';
+import { Megaphone, Plus, Trash2, X } from 'lucide-react';
 import moment from 'moment';
 
 export default function MentorAnnouncements() {
