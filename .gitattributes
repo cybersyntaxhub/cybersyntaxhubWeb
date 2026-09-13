@@ -1,0 +1,25 @@
+# Normalize all text files to LF inside the repository.
+# Without this, contributors on different platforms commit blobs with
+# differing line endings, which produces whole-file merge conflicts where
+# both sides are byte-identical apart from carriage returns.
+* text=auto
+
+# Binary assets: never apply line-ending conversion or line diffs.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.webp binary
+*.svg  text
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.eot   binary
+*.otf   binary
+*.zip binary
+*.gz  binary
+*.pdf binary
+
+# Lockfiles are generated; keep them out of diff noise but still merged as text.
+package-lock.json -diff
