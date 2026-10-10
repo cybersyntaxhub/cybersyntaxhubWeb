@@ -1,77 +1,105 @@
-# Base44 Project
+# CyberSyntax Hub
 
-Use this repository to run and edit the app locally, then publish changes back through Base44.
+Marketing site for [CyberSyntax Hub](https://cybersyntaxhub.org), a student-led
+nonprofit working to make technology education, opportunities and mentorship
+accessible to every student.
 
-Any change pushed to the repo will also be reflected in the Base44 Builder.
+Four routes: the landing page, About, Contact and Donate.
 
-## Prerequisites
+## Stack
 
-1. Clone the repository using the project's Git URL.
-2. Navigate to the project directory.
-3. Install dependencies: `npm install`.
-4. Install the Base44 CLI: `npm install -g base44@latest`.
+- React 18 + Vite 6
+- React Router 6 (client-side routing, no SSR)
+- Tailwind CSS 3 with CSS custom properties for the palette
+- framer-motion for animation
+- shadcn/ui conventions for components (`components.json`)
 
-See the [Base44 CLI docs](https://docs.base44.com/developers/references/cli/get-started/overview) if you want to run Base44 commands directly.
+## Setup
 
-## Run Locally
-
-Run the full local development environment from the project root:
-
-```bash
-base44 dev
-```
-
-`base44 dev` starts the local Base44 development backend and, when this app is configured for it, also starts the frontend dev server for you. Use the frontend URL printed by the command.
-
-For example, when the Base44 project config includes a `serveCommand`, `base44 dev` can launch the frontend too:
-
-```json5
-{
-  "site": {
-    "serveCommand": "npm run dev"
-  }
-}
-```
-
-In a Base44 project this lives in `base44/config.jsonc`.
-
-## Run Only The Frontend
-
-If you only want to work on the frontend against the hosted Base44 backend, run:
+Requires Node 22 or newer.
 
 ```bash
+npm install
 npm run dev
 ```
 
-Open the local URL printed by Vite.
+Open the URL Vite prints. There is no backend and no environment
+configuration — the site is fully static.
 
-## Use The Hosted Backend
+## Scripts
 
-For frontend-only development, create or update `.env.local` in the project root:
+| Command             | What it does                              |
+| ------------------- | ----------------------------------------- |
+| `npm run dev`       | Vite dev server with HMR                  |
+| `npm run build`     | Production build into `dist/`             |
+| `npm run preview`   | Serve the built `dist/` locally           |
+| `npm run lint`      | ESLint over the repo                      |
+| `npm run lint:fix`  | ESLint with autofix                       |
+| `npm run typecheck` | `tsc` over the JS via `jsconfig.json`     |
 
-```bash
-VITE_BASE44_APP_ID=your_app_id
-VITE_BASE44_APP_BASE_URL=https://your-app.base44.app
+## Layout
+
+```
+index.html              static metadata: title, description, OG tags, canonical
+public/                 logo, manifest, robots.txt, sitemap.xml
+src/
+  App.jsx               routes and the reduced-motion MotionConfig
+  index.css             Tailwind layers and the palette custom properties
+  components/
+    SiteNav.jsx         header, desktop links and mobile menu
+    SiteFooter.jsx      footer
+    ParticleBackground.jsx  the animated canvas behind every page
+    AnimatedIcons.jsx   per-track icons
+    ScrollToTop.jsx     scroll restoration and hash-anchor handling
+    ui/button.jsx       the one shadcn component in use
+  hooks/
+    use-seo.js          per-route title, description, canonical, robots
+    use-prefers-reduced-motion.js
+  pages/                Landing, About, Contact, Donate, NotFound
 ```
 
-`VITE_BASE44_APP_ID` identifies the Base44 app.
+## Adding a UI component
 
-`VITE_BASE44_APP_BASE_URL` tells the Base44 Vite plugin where to send local `/api` requests. Point it at your deployed Base44 app URL when you want the local frontend to use the hosted backend.
-
-When you use `base44 dev`, the command injects the local Base44 values for you, so `.env.local` is mainly needed for frontend-only workflows.
-
-## Publish Your Changes
-
-After pushing your changes to git, open the Base44 dashboard and publish the app:
+The project follows shadcn/ui conventions and `components.json` is configured,
+so pull in only what a page actually needs:
 
 ```bash
-base44 dashboard open
+npx shadcn@latest add dialog
 ```
 
-## Docs & Support
+Unused components were removed deliberately — Tailwind scans every file under
+`src/`, so components nothing imports still inflate the stylesheet.
 
-Documentation: [https://docs.base44.com/Integrations/Using-GitHub](https://docs.base44.com/Integrations/Using-GitHub)
+## Changing the domain
 
-Base44 CLI command reference: [https://docs.base44.com/developers/references/cli/commands/introduction](https://docs.base44.com/developers/references/cli/commands/introduction)
+The canonical origin is written in four places. All four need to agree:
 
-Support: [https://app.base44.com/support](https://app.base44.com/support)
+- `index.html` — `<link rel="canonical">`, `og:url`, `og:image`, `twitter:image`
+- `public/robots.txt` — the `Sitemap:` line
+- `public/sitemap.xml` — every `<loc>`
+- `src/hooks/use-seo.js` — `SITE_ORIGIN`
+
+## Adding a route
+
+1. Add the page under `src/pages/`.
+2. Register it in `src/App.jsx`, above the catch-all `*` route.
+3. Call `useSeo({ title, description, path })` at the top of the component.
+4. Add a `<url>` entry to `public/sitemap.xml`.
+5. Add it to `navLinks` in `src/components/SiteNav.jsx` if it belongs in the
+   header.
+
+## SEO caveat
+
+Per-route metadata is applied client-side by `use-seo`. Crawlers that execute
+JavaScript (Google) see it; social link scrapers read the raw HTML response and
+will preview the homepage copy for deep links. Fixing that properly means
+prerendering the routes at build time.
+
+## Deployment
+
+Static build, deployed on Vercel. `vercel.json` rewrites every path to
+`/index.html` so client-side routing works on hard refresh.
+
+```bash
+npm run build   # outputs dist/
+```

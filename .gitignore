@@ -1,5 +1,7 @@
-#env
+# Environment
 .env
+.env.*
+!.env.example
 
 # Logs
 /logs
@@ -10,10 +12,13 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies and build output
 node_modules
 dist
 dist-ssr
 *.local
+.vite
+*.tsbuildinfo
 
 # Editor directories and files
 .vscode/*
@@ -26,9 +31,13 @@ dist-ssr
 *.sln
 *.sw?
 
-.env
-.vite
+# Tooling scratch
+.freebuff/
+.vercel
 
-# Local backend data
+# Leftover local backend data from the removed Supabase/Express backend
 database.json
 uploads/
+
+# Source snapshots do not belong in version control
+*.zip
