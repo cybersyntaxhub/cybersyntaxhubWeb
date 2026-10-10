@@ -2,8 +2,7 @@ import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import SiteNav from '@/components/SiteNav';
-import SiteFooter from '@/components/SiteFooter';
+import PageShell from '@/components/PageShell';
 import { useSeo } from '@/hooks/use-seo';
 
 export default function NotFound() {
@@ -11,11 +10,7 @@ export default function NotFound() {
   const { pathname } = useLocation();
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background flex flex-col">
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
-
-      <SiteNav />
-
+    <PageShell>
       <section className="relative z-10 flex-1 px-6 md:px-16 pt-24 pb-28 text-center">
         <motion.p
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -59,8 +54,6 @@ export default function NotFound() {
           </Link>
         </motion.div>
       </section>
-
-      <SiteFooter />
-    </div>
+    </PageShell>
   );
 }

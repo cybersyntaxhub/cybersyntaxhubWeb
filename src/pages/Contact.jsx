@@ -1,10 +1,8 @@
 import { motion } from 'framer-motion';
 import { Mail } from 'lucide-react';
-import SiteNav from '@/components/SiteNav';
-import SiteFooter from '@/components/SiteFooter';
+import PageShell from '@/components/PageShell';
 import { useSeo } from '@/hooks/use-seo';
-
-const CONTACT_EMAIL = 'cybersyntaxhub@gmail.com';
+import { CONTACT_EMAIL, LEADERSHIP_FORM_URL } from '@/lib/site';
 
 export default function Contact() {
   useSeo({
@@ -15,11 +13,7 @@ export default function Contact() {
   });
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background">
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
-
-      <SiteNav />
-
+    <PageShell>
       <section className="relative z-10 px-6 md:px-16 pt-24 pb-28 text-center">
         <motion.span
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
@@ -49,16 +43,30 @@ export default function Contact() {
           href={`mailto:${CONTACT_EMAIL}`}
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
           whileHover={{ scale: 1.03, y: -2 }} whileTap={{ scale: 0.97 }}
-          className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl border border-cyan-500/25 bg-cyan-500/5 hover:bg-cyan-500/10 hover:border-cyan-500/50 transition-colors text-lg font-semibold"
+          className="inline-flex max-w-full items-center gap-3 px-6 sm:px-8 py-4 rounded-2xl border border-cyan-500/25 bg-cyan-500/5 hover:bg-cyan-500/10 hover:border-cyan-500/50 transition-colors text-base sm:text-lg font-semibold"
         >
-          <Mail className="w-5 h-5 text-cyan-400" />
-          {CONTACT_EMAIL}
+          <Mail className="w-5 h-5 flex-shrink-0 text-cyan-400" />
+          <span className="break-all">{CONTACT_EMAIL}</span>
         </motion.a>
 
         <p className="text-sm text-muted-foreground mt-6">We're a small, student-run team — expect a reply within a few days.</p>
-      </section>
 
-      <SiteFooter />
-    </div>
+        <motion.p
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
+          className="text-sm text-muted-foreground mt-10"
+        >
+          Want to help run it?{' '}
+          <a
+            href={LEADERSHIP_FORM_URL}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="text-cyan-400 hover:text-cyan-300 underline underline-offset-4 transition-colors"
+          >
+            Apply for a leadership role
+          </a>
+          .
+        </motion.p>
+      </section>
+    </PageShell>
   );
 }

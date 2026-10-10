@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, Users, BookOpen, Shield, ChevronDown, Code2, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CyberSecurityIcon, BioTechIcon, FinanceIcon, DataScienceIcon } from '@/components/AnimatedIcons';
-import ParticleBackground from '@/components/ParticleBackground';
-import SiteNav from '@/components/SiteNav';
-import SiteFooter from '@/components/SiteFooter';
+import PageShell from '@/components/PageShell';
 import { useSeo } from '@/hooks/use-seo';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
+import { CONTACT_EMAIL, CURRICULUM_URL, LEADERSHIP_FORM_URL } from '@/lib/site';
 
 const tracks = [
   { name: 'CyberSecurity', desc: 'Master ethical hacking, threat analysis, and defense systems at the cutting edge.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.2fmno0j90s7z' },
@@ -20,9 +20,26 @@ const tracks = [
 const rotatingHeroWords = tracks.map((track) => track.name);
 
 const steps = [
-  { num: '01', title: 'Pick a track', desc: 'Read through the curriculum for whichever of the five fields you want to go deep in. Every track outline is public — no sign-up needed to see what you would be learning.' },
-  { num: '02', title: 'Get in touch', desc: 'Email us or apply for a leadership role. We will tell you what is running right now, what is still being built, and where you would fit.' },
-  { num: '03', title: 'Build something real', desc: 'Work through your track, then take the optional capstone to build a portfolio project with mentor guidance.' },
+  {
+    num: '01',
+    title: 'Pick a track',
+    desc: 'Read through the curriculum for whichever of the five fields you want to go deep in. Every track outline is public — no sign-up needed to see what you would be learning.',
+    actions: [{ label: 'Open the curriculum', href: CURRICULUM_URL, external: true }],
+  },
+  {
+    num: '02',
+    title: 'Get in touch',
+    desc: 'Email us or apply for a leadership role. We will tell you what is running right now, what is still being built, and where you would fit.',
+    actions: [
+      { label: `Email ${CONTACT_EMAIL}`, href: `mailto:${CONTACT_EMAIL}` },
+      { label: 'Leadership application', href: LEADERSHIP_FORM_URL, external: true },
+    ],
+  },
+  {
+    num: '03',
+    title: 'Build something real',
+    desc: 'Work through your track, then take the optional capstone to build a portfolio project with mentor guidance.',
+  },
 ];
 
 const fadeUp = {
@@ -32,14 +49,11 @@ const fadeUp = {
 
 export default function Landing() {
   useSeo({ path: '/' });
-  const [activeTrack, setActiveTrack] = useState(null);
   const [heroWordIndex, setHeroWordIndex] = useState(0);
   const prefersReducedMotion = usePrefersReducedMotion();
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const heroY = useTransform(scrollY, [0, 400], [0, -60]);
-  const learnMoreUrl = 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?usp=sharing';
-  const leadershipUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdB1B02Oo6QB8JgNVoTLlVNcxNH99-SjppRDdo03qHRmvXEyA/viewform?usp=dialog';
 
   // WCAG 2.2.2: content that moves on a loop needs a way to stop. Honouring
   // the OS setting is that control here, so reduce-motion visitors see the
@@ -54,15 +68,7 @@ export default function Landing() {
   }, [prefersReducedMotion]);
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background">
-      <ParticleBackground />
-
-      {/* Radial glow top */}
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="fixed bottom-0 right-0 w-[600px] h-[400px] bg-purple-500/4 rounded-full blur-[100px] pointer-events-none z-0" />
-
-      <SiteNav />
-
+    <PageShell>
       {/* HERO */}
       <motion.section style={{ opacity: heroOpacity, y: heroY }}
         className="relative z-10 flex flex-col items-center text-center px-6 pt-20 md:pt-32 pb-24">
@@ -105,8 +111,8 @@ export default function Landing() {
           transition={{ duration: 0.7, delay: 0.45 }}
           className="mt-7 text-muted-foreground text-lg md:text-xl max-w-2xl leading-relaxed"
         >
-          CyberSyntaxHub is a mentorship and skill-building program where ambitious students explore emerging technology tracks with guided support, hands-on learning, and expert feedback.
-          <span className="text-foreground/60"> Real guidance. Measurable growth.</span>
+          CyberSyntax Hub is a student-led mentorship and skill-building program. Work through a technology track at your own pace, with guided support, hands-on projects and mentor feedback.
+          <span className="text-foreground/60"> Every track outline is public — read it before you commit to anything.</span>
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -114,17 +120,17 @@ export default function Landing() {
           transition={{ duration: 0.7, delay: 0.65 }}
           className="mt-10 flex flex-col sm:flex-row gap-4"
         >
-          <a href={leadershipUrl} target="_blank" rel="noreferrer noopener">
+          <a href={LEADERSHIP_FORM_URL} target="_blank" rel="noreferrer noopener">
             <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
               <Button size="lg" variant="secondary" className="bg-slate-800 border border-slate-700 text-white font-semibold px-10 text-base h-12 hover:bg-slate-700">
                 Leadership Application
               </Button>
             </motion.div>
           </a>
-          <a href={learnMoreUrl} target="_blank" rel="noreferrer noopener">
+          <a href={CURRICULUM_URL} target="_blank" rel="noreferrer noopener">
             <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
               <Button size="lg" variant="outline" className="border-cyan-500/30 bg-cyan-500/5 hover:bg-cyan-500/10 text-cyan-300 font-semibold px-10 text-base h-12">
-                Learn More
+                See the curriculum
               </Button>
             </motion.div>
           </a>
@@ -163,8 +169,6 @@ export default function Landing() {
               whileInView="visible"
               viewport={{ once: true }}
               whileHover={{ y: -10, transition: { duration: 0.25, ease: 'easeOut' } }}
-              onHoverStart={() => setActiveTrack(track.name)}
-              onHoverEnd={() => setActiveTrack(null)}
               className={`relative group p-8 rounded-2xl border bg-gradient-to-b ${track.bg} ${track.border} transition-all duration-300 cursor-pointer overflow-hidden`}
             >
               {/* Glow bg */}
@@ -183,11 +187,13 @@ export default function Landing() {
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{track.desc}</p>
 
-              <motion.div className="mt-6 flex items-center gap-1.5 text-xs font-mono opacity-0 group-hover:opacity-100 transition-opacity"
+              {/* group-focus-visible as well as group-hover, or keyboard users
+                  never see the affordance. */}
+              <div className="mt-6 flex items-center gap-1.5 text-xs font-mono opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
                 style={{ color: track.color }}>
-                <span>Explore track</span>
+                <span>Explore track<span className="sr-only"> (opens in a new tab)</span></span>
                 <ArrowRight className="w-3 h-3" />
-              </motion.div>
+              </div>
             </motion.a>
           ))}
         </div>
@@ -309,6 +315,21 @@ export default function Landing() {
               <div className="pt-3">
                 <h3 className="font-bold text-xl mb-2 tracking-tight">{step.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{step.desc}</p>
+                {step.actions && (
+                  <div className="mt-4 flex flex-col sm:flex-row sm:flex-wrap gap-x-6 gap-y-2">
+                    {step.actions.map((action) => (
+                      <a
+                        key={action.label}
+                        href={action.href}
+                        {...(action.external ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
+                        className="inline-flex items-center gap-1.5 text-xs font-mono text-cyan-400 hover:text-cyan-300 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                      >
+                        <span className="break-all">{action.label}</span>
+                        <ArrowRight className="w-3 h-3 flex-shrink-0" />
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}
@@ -334,15 +355,31 @@ export default function Landing() {
           />
 
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4">
-            Ready to level up?
+            Ready to start?
           </h2>
           <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto">
-            Join ambitious students building real skills with expert mentors through CyberSyntaxHub's structured programs.
+            Read a track outline, then send us a message. We will tell you what is running right now and where you would fit.
           </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/contact">
+              <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
+                <Button size="lg" variant="outline" className="w-full sm:w-auto border-cyan-500/30 bg-cyan-500/5 hover:bg-cyan-500/10 text-cyan-300 font-semibold px-10 text-base h-12">
+                  Contact the team
+                </Button>
+              </motion.div>
+            </Link>
+            <a href={LEADERSHIP_FORM_URL} target="_blank" rel="noreferrer noopener">
+              <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
+                <Button size="lg" variant="secondary" className="w-full sm:w-auto bg-slate-800 border border-slate-700 text-white font-semibold px-10 text-base h-12 hover:bg-slate-700">
+                  Apply for a role
+                </Button>
+              </motion.div>
+            </a>
+          </div>
         </motion.div>
       </section>
 
-      <SiteFooter />
-    </div>
+    </PageShell>
   );
 }

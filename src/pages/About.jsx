@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
-import SiteNav from '@/components/SiteNav';
-import SiteFooter from '@/components/SiteFooter';
+import PageShell from '@/components/PageShell';
 import { useSeo } from '@/hooks/use-seo';
 
 const team = [
@@ -24,12 +23,7 @@ export default function About() {
   });
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background">
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
-      <div className="fixed bottom-0 right-0 w-[600px] h-[400px] bg-purple-500/4 rounded-full blur-[100px] pointer-events-none z-0" />
-
-      <SiteNav />
-
+    <PageShell>
       {/* HEADER */}
       <section className="relative z-10 px-6 md:px-16 pt-20 pb-16 text-center">
         <motion.span
@@ -120,7 +114,6 @@ export default function About() {
         </div>
       </section>
 
-      <SiteFooter />
-    </div>
+    </PageShell>
   );
 }

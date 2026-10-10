@@ -1,14 +1,10 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Heart, Mail } from 'lucide-react';
+import { ArrowRight, Heart, Megaphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import SiteNav from '@/components/SiteNav';
-import SiteFooter from '@/components/SiteFooter';
+import PageShell from '@/components/PageShell';
 import { useSeo } from '@/hooks/use-seo';
-
-const alternatives = [
-  { icon: Mail, title: 'Spread the word', desc: 'Tell a student, teacher, or school about CyberSyntax Hub — reach matters more than money right now.', cta: 'Contact Us', to: '/contact' },
-];
+import { LEADERSHIP_FORM_URL } from '@/lib/site';
 
 export default function Donate() {
   useSeo({
@@ -19,11 +15,7 @@ export default function Donate() {
   });
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background">
-      <div className="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none z-0" />
-
-      <SiteNav />
-
+    <PageShell>
       <section className="relative z-10 px-6 md:px-16 pt-24 pb-16 text-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
@@ -50,30 +42,34 @@ export default function Donate() {
         </motion.p>
       </section>
 
-      <section className="relative z-10 px-6 md:px-16 pb-24 max-w-3xl mx-auto">
-        <div className="grid grid-cols-1 gap-5 max-w-md mx-auto">
-          {alternatives.map((item, i) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-              transition={{ delay: i * 0.1, duration: 0.6 }}
-              className="p-7 rounded-2xl border border-white/10 bg-card/40 hover:border-cyan-500/40 transition-colors flex flex-col"
-            >
-              <item.icon className="w-6 h-6 text-cyan-400 mb-4" />
-              <h3 className="font-bold text-lg mb-2 tracking-tight">{item.title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">{item.desc}</p>
-              <Link to={item.to}>
-                <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 group">
-                  {item.cta}
-                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+      <section className="relative z-10 px-6 md:px-16 pb-24">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="max-w-xl mx-auto p-7 md:p-9 rounded-2xl border border-white/10 bg-card/40 hover:border-cyan-500/40 transition-colors"
+        >
+          <Megaphone className="w-6 h-6 text-cyan-400 mb-4" />
+          <h2 className="font-bold text-lg mb-2 tracking-tight">Spread the word</h2>
+          <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+            Tell a student, a teacher or a school about CyberSyntax Hub — reach matters more than money right now. If you
+            want to get properly involved, we're also looking for people to help run the tracks.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Link to="/contact" className="flex-1">
+              <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 group">
+                Contact us
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <a href={LEADERSHIP_FORM_URL} target="_blank" rel="noreferrer noopener" className="flex-1">
+              <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 group">
+                Apply for a role
+                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </a>
+          </div>
+        </motion.div>
       </section>
-
-      <SiteFooter />
-    </div>
+    </PageShell>
   );
 }
