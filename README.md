@@ -46,6 +46,7 @@ src/
   App.jsx               routes and the reduced-motion MotionConfig
   index.css             Tailwind layers and the palette custom properties
   components/
+    PageShell.jsx       the frame every route renders inside
     SiteNav.jsx         header, desktop links and mobile menu
     SiteFooter.jsx      footer
     ParticleBackground.jsx  the animated canvas behind every page
@@ -55,8 +56,13 @@ src/
   hooks/
     use-seo.js          per-route title, description, canonical, robots
     use-prefers-reduced-motion.js
+  lib/site.js           contact email and the external Google Doc / form URLs
   pages/                Landing, About, Contact, Donate, NotFound
 ```
+
+Every page returns `<PageShell>…</PageShell>`. The shell owns the particle
+canvas, the radial glows, the header, the footer, the `<main>` landmark and the
+skip link — a page should not render any of those itself.
 
 ## Adding a UI component
 
@@ -81,7 +87,7 @@ The canonical origin is written in four places. All four need to agree:
 
 ## Adding a route
 
-1. Add the page under `src/pages/`.
+1. Add the page under `src/pages/`, returning `<PageShell>…</PageShell>`.
 2. Register it in `src/App.jsx`, above the catch-all `*` route.
 3. Call `useSeo({ title, description, path })` at the top of the component.
 4. Add a `<url>` entry to `public/sitemap.xml`.

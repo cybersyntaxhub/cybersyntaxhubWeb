@@ -25,6 +25,13 @@ broken import path.
 - **Do not link to routes that do not exist.** An earlier student/mentor
   dashboard was removed and the copy kept referring to it for months. Check
   `src/App.jsx` before writing any internal link.
+- **A call to action needs somewhere to go.** The homepage carried a
+  "Ready to level up?" banner with no button in it for a long time. If you
+  write a heading that asks the reader to act, give them the control.
+- **Pages render inside `PageShell`.** Do not reintroduce a per-page root
+  div, glow div, `SiteNav` or `SiteFooter` — they drifted out of sync across
+  five pages last time. Contact details and external URLs come from
+  `src/lib/site.js`, not from inline literals.
 - **Keep the visual design.** The dark palette, the cyan accent, the particle
   canvas and the gradient headings are deliberate. Change structure, copy and
   behaviour freely; do not restyle.
