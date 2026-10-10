@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Users, BookOpen, Shield, ChevronDown, Star, Code2, Brain, TrendingUp } from 'lucide-react';
+import { ArrowRight, Users, BookOpen, Shield, ChevronDown, Code2, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CyberSecurityIcon, BioTechIcon, FinanceIcon, DataScienceIcon } from '@/components/AnimatedIcons';
 import ParticleBackground from '@/components/ParticleBackground';
@@ -17,13 +17,6 @@ const tracks = [
   { name: 'BioMed', desc: 'Investigate biomedical innovation, health technology, and research-driven discovery.', Icon: BioTechIcon, color: '#39ff14', bg: 'from-green-500/10 to-green-500/0', border: 'border-green-500/20 hover:border-green-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.i8eo6ds87x36' },
 ];
 
-const stats = [
-  { val: '500+', label: 'Students Enrolled', icon: Users },
-  { val: '50+', label: 'Expert Mentors', icon: Brain },
-  { val: '5', label: 'Specialized Tracks', icon: Code2 },
-  { val: '95%', label: 'Success Rate', icon: TrendingUp },
-];
-
 const steps = [
   { num: '01', icon: Users, title: 'Apply & Get Matched', desc: 'Complete your profile, upload your resume, and select your interest tracks. Our mentors review every application personally.' },
   { num: '02', icon: Shield, title: 'Get Accepted', desc: 'Once accepted, you unlock your full dashboard — announcements, direct messaging, assignments, and course content.' },
@@ -34,22 +27,6 @@ const fadeUp = {
   hidden: { opacity: 0, y: 40 },
   visible: (i) => ({ opacity: 1, y: 0, transition: { delay: i * 0.12, duration: 0.7, ease: [0.22, 1, 0.36, 1] } }),
 };
-
-function CountUp({ target, suffix = '' }) {
-  const [count, setCount] = useState(0);
-  useEffect(() => {
-    const num = parseInt(target);
-    if (isNaN(num)) { setCount(target); return; }
-    let start = 0;
-    const step = Math.ceil(num / 40);
-    const interval = setInterval(() => {
-      start += step;
-      if (start >= num) { setCount(num); clearInterval(interval); } else { setCount(start); }
-    }, 30);
-    return () => clearInterval(interval);
-  }, [target]);
-  return <>{typeof count === 'number' ? count : count}{suffix}</>;
-}
 
 export default function Landing() {
   usePageTitle();
@@ -150,25 +127,6 @@ export default function Landing() {
           </a>
         </motion.div>
 
-        {/* Trusted by line */}
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
-          className="mt-14 flex items-center gap-3 text-sm text-muted-foreground"
-        >
-          <div className="flex -space-x-2">
-            {['#00f0ff', '#39ff14', '#ffd700', '#a855f7', '#f472b6'].map((c, i) => (
-              <div key={i} className="w-7 h-7 rounded-full border-2 border-background flex items-center justify-center text-xs font-bold"
-                style={{ background: `${c}22`, borderColor: `${c}44`, color: c }}>
-                {['A','B','C','D','E'][i]}
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center gap-1">
-            {[1,2,3,4,5].map(s => <Star key={s} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />)}
-          </div>
-          <span>500+ students mentored</span>
-        </motion.div>
-
         <motion.div className="mt-16 flex flex-col items-center gap-2 text-muted-foreground"
           animate={{ y: [0, 6, 0] }} transition={{ duration: 2, repeat: Infinity }}>
           <span className="text-xs font-mono tracking-widest uppercase opacity-50">Scroll</span>
@@ -183,9 +141,9 @@ export default function Landing() {
           <span className="inline-block px-3 py-1 rounded-full border border-white/10 text-xs font-mono text-muted-foreground tracking-wider uppercase mb-4">
             Specializations
           </span>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight">Five Tracks. Infinite Potential.</h2>
+          <h2 className="text-4xl md:text-5xl font-black tracking-tight">Five Tracks, One Community</h2>
           <p className="mt-4 text-muted-foreground text-lg max-w-xl mx-auto">
-            Choose your path and get matched with mentors who've built careers in your field.
+            Pick the field you want to go deep in. Each track has its own curriculum and project path.
           </p>
         </motion.div>
 
@@ -310,26 +268,6 @@ export default function Landing() {
               </div>
               <p className="text-sm text-muted-foreground">Build confidence with mentor feedback and a completed capstone showcase for future steps.</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* STATS */}
-      <section className="relative z-10 px-6 md:px-16 py-20">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-white/5 rounded-2xl overflow-hidden border border-white/5">
-            {stats.map((s, i) => (
-              <motion.div key={s.label}
-                custom={i} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
-                className="flex flex-col items-center justify-center py-12 px-6 bg-card text-center group hover:bg-white/[0.03] transition-colors"
-              >
-                <s.icon className="w-5 h-5 text-cyan-400 mb-3 opacity-60 group-hover:opacity-100 transition-opacity" />
-                <div className="text-4xl md:text-5xl font-black text-cyan-400 font-mono">
-                  <CountUp target={s.val.replace(/\D/g, '')} />{s.val.replace(/\d/g, '')}
-                </div>
-                <div className="text-sm text-muted-foreground mt-2">{s.label}</div>
-              </motion.div>
-            ))}
           </div>
         </div>
       </section>
