@@ -6,7 +6,7 @@ import { CyberSecurityIcon, BioTechIcon, FinanceIcon, DataScienceIcon } from '@/
 import ParticleBackground from '@/components/ParticleBackground';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { useSeo } from '@/hooks/use-seo';
 
 const tracks = [
   { name: 'CyberSecurity', desc: 'Master ethical hacking, threat analysis, and defense systems at the cutting edge.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.2fmno0j90s7z' },
@@ -30,7 +30,7 @@ const fadeUp = {
 };
 
 export default function Landing() {
-  usePageTitle();
+  useSeo({ path: '/' });
   const [activeTrack, setActiveTrack] = useState(null);
   const [heroWordIndex, setHeroWordIndex] = useState(0);
   const { scrollY } = useScroll();

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { useSeo } from '@/hooks/use-seo';
 
 const team = [
   { name: 'Devansh Malhotra', role: 'Founder & Tech / Web Dev Lead' },
@@ -16,7 +16,12 @@ const fadeUp = {
 };
 
 export default function About() {
-  usePageTitle('About');
+  useSeo({
+    title: 'About',
+    description:
+      'CyberSyntax Hub is a student-led nonprofit working to make technology education, opportunities and mentorship accessible to every student. Read our mission and meet the team.',
+    path: '/about',
+  });
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">

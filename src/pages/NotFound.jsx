@@ -4,10 +4,10 @@ import { ArrowLeft, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { useSeo } from '@/hooks/use-seo';
 
 export default function NotFound() {
-  usePageTitle('Page not found');
+  useSeo({ title: 'Page not found', noindex: true });
   const { pathname } = useLocation();
 
   return (

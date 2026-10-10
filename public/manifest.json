@@ -1,21 +1,18 @@
 {
-    "name": "CyberSyntax Hub",
-    "short_name": "CyberSyntax",
-    "description": "A global mentorship platform for CyberSecurity, BioTech, Finance, and Data Science.",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#0a0a0a",
-    "theme_color": "#0a0a0a",
-    "icons": [
-        {
-            "src": "/logo.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/logo.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
+  "name": "CyberSyntax Hub",
+  "short_name": "CyberSyntax",
+  "description": "A student-led nonprofit making technology education and mentorship accessible across cybersecurity, AI, finance, data science and biomed.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0b0d",
+  "theme_color": "#0a0b0d",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "731x731",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
 }

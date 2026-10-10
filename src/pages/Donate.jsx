@@ -4,14 +4,19 @@ import { ArrowRight, Heart, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { useSeo } from '@/hooks/use-seo';
 
 const alternatives = [
   { icon: Mail, title: 'Spread the word', desc: 'Tell a student, teacher, or school about CyberSyntax Hub — reach matters more than money right now.', cta: 'Contact Us', to: '/contact' },
 ];
 
 export default function Donate() {
-  usePageTitle('Donate');
+  useSeo({
+    title: 'Donate',
+    description:
+      'CyberSyntax Hub is not accepting donations yet. We are putting proper financial infrastructure in place first. Here is how you can help in the meantime.',
+    path: '/donate',
+  });
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">

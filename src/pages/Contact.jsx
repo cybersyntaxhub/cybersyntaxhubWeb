@@ -2,12 +2,17 @@ import { motion } from 'framer-motion';
 import { Mail } from 'lucide-react';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
-import { usePageTitle } from '@/hooks/use-page-title';
+import { useSeo } from '@/hooks/use-seo';
 
 const CONTACT_EMAIL = 'cybersyntaxhub@gmail.com';
 
 export default function Contact() {
-  usePageTitle('Contact');
+  useSeo({
+    title: 'Contact',
+    description:
+      'Get in touch with CyberSyntax Hub. Students, prospective mentors, educators and anyone curious about what we are building can reach the team directly by email.',
+    path: '/contact',
+  });
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">

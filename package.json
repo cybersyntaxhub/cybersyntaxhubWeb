@@ -1,7 +1,7 @@
 {
-  "name": "base44-app",
+  "name": "cybersyntaxhub-web",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -106,5 +106,7 @@
   },
   "engines": {
     "node": ">=22"
-  }
+  },
+  "description": "Website for CyberSyntax Hub, a student-led STEM nonprofit.",
+  "license": "MIT"
 }
