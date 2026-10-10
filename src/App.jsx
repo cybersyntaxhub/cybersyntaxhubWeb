@@ -1,4 +1,3 @@
-import { Toaster } from "@/components/ui/toaster";
 import { MotionConfig } from 'framer-motion';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
@@ -30,7 +29,6 @@ function App() {
       <Router>
         <ScrollToTop />
         <SiteRoutes />
-        <Toaster />
       </Router>
     </MotionConfig>
   );
