@@ -7,6 +7,7 @@ import ParticleBackground from '@/components/ParticleBackground';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
 import { useSeo } from '@/hooks/use-seo';
+import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 
 const tracks = [
   { name: 'CyberSecurity', desc: 'Master ethical hacking, threat analysis, and defense systems at the cutting edge.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.2fmno0j90s7z' },
@@ -33,19 +34,24 @@ export default function Landing() {
   useSeo({ path: '/' });
   const [activeTrack, setActiveTrack] = useState(null);
   const [heroWordIndex, setHeroWordIndex] = useState(0);
+  const prefersReducedMotion = usePrefersReducedMotion();
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const heroY = useTransform(scrollY, [0, 400], [0, -60]);
   const learnMoreUrl = 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?usp=sharing';
   const leadershipUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdB1B02Oo6QB8JgNVoTLlVNcxNH99-SjppRDdo03qHRmvXEyA/viewform?usp=dialog';
 
+  // WCAG 2.2.2: content that moves on a loop needs a way to stop. Honouring
+  // the OS setting is that control here, so reduce-motion visitors see the
+  // first track name and nothing cycles.
   useEffect(() => {
+    if (prefersReducedMotion) return;
     const interval = setInterval(() => {
       setHeroWordIndex((prev) => (prev + 1) % rotatingHeroWords.length);
     }, 2200);
 
     return () => clearInterval(interval);
-  }, [rotatingHeroWords.length]);
+  }, [prefersReducedMotion]);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background">
@@ -322,7 +328,7 @@ export default function Landing() {
 
           <motion.img
             src="/logo.png"
-            alt="Logo"
+            alt=""
             className="w-16 h-16 object-contain mb-6 mx-auto"
             animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 4, repeat: Infinity }}
           />

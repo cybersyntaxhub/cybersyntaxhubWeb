@@ -5,7 +5,7 @@ export default function SiteFooter() {
     <footer className="relative z-10 border-t border-white/[0.05] px-6 md:px-16 py-10">
       <div className="flex flex-col md:flex-row items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-2.5">
-          <img src="/logo.png" alt="Logo" className="w-7 h-7 object-contain" />
+          <img src="/logo.png" alt="" className="w-7 h-7 object-contain" />
           <span className="text-sm font-bold">CyberSyntax<span className="text-cyan-400">Hub</span></span>
         </Link>
         <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} CyberSyntax Hub. All rights reserved.</p>

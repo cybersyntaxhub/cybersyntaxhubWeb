@@ -47,7 +47,7 @@ export default function SiteNav() {
         <Link to="/" className={`flex items-center gap-2.5 ${focusRing}`}>
           <motion.img
             src="/logo.png"
-            alt="CyberSyntax Hub"
+            alt=""
             className="w-9 h-9 object-contain"
             whileHover={{ scale: 1.08, rotate: 5 }} transition={{ type: 'spring', stiffness: 400 }}
           />

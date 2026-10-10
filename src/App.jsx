@@ -1,4 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
+import { MotionConfig } from 'framer-motion';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
 
@@ -23,11 +24,15 @@ const SiteRoutes = () => {
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop />
-      <SiteRoutes />
-      <Toaster />
-    </Router>
+    // reducedMotion="user" makes every motion component on the site honour the
+    // OS "reduce motion" setting instead of animating regardless.
+    <MotionConfig reducedMotion="user">
+      <Router>
+        <ScrollToTop />
+        <SiteRoutes />
+        <Toaster />
+      </Router>
+    </MotionConfig>
   );
 }
 
