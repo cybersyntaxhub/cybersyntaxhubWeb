@@ -1,13 +1,12 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Heart, Users, Mail } from 'lucide-react';
+import { ArrowRight, Heart, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageTitle } from '@/hooks/use-page-title';
 
 const alternatives = [
-  { icon: Users, title: 'Become a mentor', desc: "Share your expertise directly with students in CyberSecurity, BioTech, Finance, or Data Science.", cta: 'Join as Mentor', to: '/signup?role=mentor' },
   { icon: Mail, title: 'Spread the word', desc: 'Tell a student, teacher, or school about CyberSyntax Hub — reach matters more than money right now.', cta: 'Contact Us', to: '/contact' },
 ];
 
@@ -47,7 +46,7 @@ export default function Donate() {
       </section>
 
       <section className="relative z-10 px-6 md:px-16 pb-24 max-w-3xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 gap-5 max-w-md mx-auto">
           {alternatives.map((item, i) => (
             <motion.div
               key={item.title}

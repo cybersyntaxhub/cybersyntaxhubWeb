@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 
 const navLinks = [
   { label: 'Tracks', href: '/#tracks' },
@@ -31,19 +30,6 @@ export default function SiteNav() {
             {item.label}
           </Link>
         ))}
-      </div>
-
-      <div className="flex items-center gap-3">
-        <Link to="/signin">
-          <Button variant="ghost" className="text-sm text-muted-foreground hover:text-foreground">Sign In</Button>
-        </Link>
-        <Link to="/signup">
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-            <Button className="text-sm bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-5 shadow-lg shadow-cyan-500/20">
-              Get Started
-            </Button>
-          </motion.div>
-        </Link>
       </div>
     </motion.nav>
   );

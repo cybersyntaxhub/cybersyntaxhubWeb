@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { Link } from 'react-router-dom';
 import { ArrowRight, Users, BookOpen, Shield, ChevronDown, Star, Code2, Brain, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CyberSecurityIcon, BioTechIcon, FinanceIcon, DataScienceIcon } from '@/components/AnimatedIcons';
@@ -8,7 +7,6 @@ import ParticleBackground from '@/components/ParticleBackground';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageTitle } from '@/hooks/use-page-title';
-import { useAppAuth } from '@/lib/appAuth.jsx';
 import { currentCohort } from '@/lib/cohort';
 
 const tracks = [
@@ -57,11 +55,9 @@ export default function Landing() {
   usePageTitle();
   const [activeTrack, setActiveTrack] = useState(null);
   const [heroWordIndex, setHeroWordIndex] = useState(0);
-  const { currentUser } = useAppAuth();
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const heroY = useTransform(scrollY, [0, 400], [0, -60]);
-  const dashboardPath = currentUser?.role === 'mentor' ? '/mentor' : '/student';
   const rotatingHeroWords = ['Tech', 'BioMed', 'Finance', 'Data Science'];
   const learnMoreUrl = 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?usp=sharing';
   const leadershipUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdB1B02Oo6QB8JgNVoTLlVNcxNH99-SjppRDdo03qHRmvXEyA/viewform?usp=dialog';
@@ -138,21 +134,6 @@ export default function Landing() {
           transition={{ duration: 0.7, delay: 0.65 }}
           className="mt-10 flex flex-col sm:flex-row gap-4"
         >
-          <Link to={currentUser ? dashboardPath : '/signup'}>
-            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
-              <Button size="lg" className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-10 text-base h-12 shadow-xl shadow-cyan-500/25 group">
-                {currentUser ? 'Open Dashboard' : 'Apply as Student'}
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </motion.div>
-          </Link>
-          <Link to={currentUser ? dashboardPath : '/signup?role=mentor'}>
-            <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
-              <Button size="lg" variant="outline" className="border-white/10 hover:bg-white/5 hover:border-white/20 text-foreground font-semibold px-10 text-base h-12">
-                {currentUser ? 'View Profile' : 'Join as Mentor'}
-              </Button>
-            </motion.div>
-          </Link>
           <a href={leadershipUrl} target="_blank" rel="noreferrer noopener">
             <motion.div whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
               <Button size="lg" variant="secondary" className="bg-slate-800 border border-slate-700 text-white font-semibold px-10 text-base h-12 hover:bg-slate-700">
@@ -417,23 +398,6 @@ export default function Landing() {
           <p className="text-muted-foreground text-lg mb-10 max-w-lg mx-auto">
             Join ambitious students building real skills with expert mentors through CyberSyntaxHub's structured programs.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/signup">
-              <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.97 }}>
-                <Button size="lg" className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-10 h-12 text-base shadow-xl shadow-cyan-500/25 group">
-                  Apply Now
-                  <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </motion.div>
-            </Link>
-            <Link to="/signup?role=mentor">
-              <motion.div whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.97 }}>
-                <Button size="lg" variant="outline" className="border-white/10 hover:bg-white/5 px-10 h-12 text-base">
-                  Become a Mentor
-                </Button>
-              </motion.div>
-            </Link>
-          </div>
         </motion.div>
       </section>
 

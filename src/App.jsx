@@ -1,55 +1,20 @@
 import { Toaster } from "@/components/ui/toaster";
-import { QueryClientProvider } from '@tanstack/react-query';
-import { queryClientInstance } from '@/lib/query-client';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import ScrollToTop from './components/ScrollToTop';
-import { AppAuthProvider } from '@/lib/appAuth.jsx';
 
 import Landing from '@/pages/Landing';
 import About from '@/pages/About';
 import Contact from '@/pages/Contact';
 import Donate from '@/pages/Donate';
-import Signup from '@/pages/Signup';
-import Signin from '@/pages/Signin';
-import StudentDashboard from '@/pages/StudentDashboard';
-import StudentAnnouncements from '@/pages/StudentAnnouncements';
-import StudentAssignments from '@/pages/StudentAssignments';
-import StudentMessages from '@/pages/StudentMessages';
-import StudentCourses from '@/pages/StudentCourses';
-import MentorDashboard from '@/pages/MentorDashboard';
-import MentorApplications from '@/pages/MentorApplications';
-import MentorStudents from '@/pages/MentorStudents';
-import MentorAnnouncements from '@/pages/MentorAnnouncements';
-import MentorAssignments from '@/pages/MentorAssignments';
-import MentorMessages from '@/pages/MentorMessages';
-import MentorCourses from '@/pages/MentorCourses';
 
-const AuthenticatedApp = () => {
+const SiteRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/donate" element={<Donate />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/signin" element={<Signin />} />
-
-      <Route path="/student" element={<StudentDashboard />}>
-        <Route path="announcements" element={<StudentAnnouncements />} />
-        <Route path="assignments" element={<StudentAssignments />} />
-        <Route path="messages" element={<StudentMessages />} />
-        <Route path="courses" element={<StudentCourses />} />
-      </Route>
-
-      <Route path="/mentor" element={<MentorDashboard />}>
-        <Route path="applications" element={<MentorApplications />} />
-        <Route path="students" element={<MentorStudents />} />
-        <Route path="announcements" element={<MentorAnnouncements />} />
-        <Route path="assignments" element={<MentorAssignments />} />
-        <Route path="messages" element={<MentorMessages />} />
-        <Route path="courses" element={<MentorCourses />} />
-      </Route>
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>
@@ -58,15 +23,11 @@ const AuthenticatedApp = () => {
 
 function App() {
   return (
-    <AppAuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <ScrollToTop />
-          <AuthenticatedApp />
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
-    </AppAuthProvider>
+    <Router>
+      <ScrollToTop />
+      <SiteRoutes />
+      <Toaster />
+    </Router>
   );
 }
 

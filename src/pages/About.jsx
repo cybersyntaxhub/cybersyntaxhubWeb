@@ -1,7 +1,4 @@
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageTitle } from '@/hooks/use-page-title';
@@ -115,24 +112,6 @@ export default function About() {
               <p className="text-sm text-muted-foreground mt-1">{member.role}</p>
             </motion.div>
           ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="relative z-10 px-6 md:px-16 py-20 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Want to be part of it?</h2>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link to="/signup">
-            <Button size="lg" className="bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-8 h-12 shadow-xl shadow-cyan-500/25 group">
-              Apply as Student
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-          <Link to="/signup?role=mentor">
-            <Button size="lg" variant="outline" className="border-white/10 hover:bg-white/5 px-8 h-12">
-              Join as Mentor
-            </Button>
-          </Link>
         </div>
       </section>
 
