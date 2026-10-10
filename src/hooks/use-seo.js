@@ -3,8 +3,8 @@ import { useEffect } from 'react';
 const SITE_NAME = 'CyberSyntax Hub';
 
 // Keep in sync with the canonical origin in index.html, public/robots.txt and
-// public/sitemap.xml.
-const SITE_ORIGIN = 'https://cybersyntaxhub.org';
+// public/sitemap.xml. See "Changing the domain" in README.md.
+const SITE_ORIGIN = 'https://cybersyntaxhub.vercel.app';
 
 // Sets the per-route title, description, canonical URL and robots directive.
 //

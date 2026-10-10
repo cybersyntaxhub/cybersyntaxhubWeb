@@ -1,6 +1,6 @@
 # CyberSyntax Hub
 
-Marketing site for [CyberSyntax Hub](https://cybersyntaxhub.org), a student-led
+Marketing site for [CyberSyntax Hub](https://cybersyntaxhub.vercel.app), a student-led
 nonprofit working to make technology education, opportunities and mentorship
 accessible to every student.
 
@@ -78,12 +78,21 @@ Unused components were removed deliberately — Tailwind scans every file under
 
 ## Changing the domain
 
-The canonical origin is written in four places. All four need to agree:
+The canonical origin is currently the Vercel subdomain
+`https://cybersyntaxhub.vercel.app`. It is written in five places, and all five
+need to agree — a canonical URL pointing at a different host than the one
+serving the page tells Google to index the other host:
 
 - `index.html` — `<link rel="canonical">`, `og:url`, `og:image`, `twitter:image`
 - `public/robots.txt` — the `Sitemap:` line
 - `public/sitemap.xml` — every `<loc>`
 - `src/hooks/use-seo.js` — `SITE_ORIGIN`
+- this file — the link at the top
+
+Vercel serves every branch and commit on its own preview subdomain. Those are
+`noindex` by default on Vercel's side, and the canonical tag points them back at
+the production origin regardless, so previews will not compete with it in
+search.
 
 ## Adding a route
 
