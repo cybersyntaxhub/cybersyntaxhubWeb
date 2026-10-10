@@ -7,7 +7,6 @@ import ParticleBackground from '@/components/ParticleBackground';
 import SiteNav from '@/components/SiteNav';
 import SiteFooter from '@/components/SiteFooter';
 import { usePageTitle } from '@/hooks/use-page-title';
-import { currentCohort } from '@/lib/cohort';
 
 const tracks = [
   { name: 'CyberSecurity', desc: 'Master ethical hacking, threat analysis, and defense systems at the cutting edge.', Icon: CyberSecurityIcon, color: '#00f0ff', bg: 'from-cyan-500/10 to-cyan-500/0', border: 'border-cyan-500/20 hover:border-cyan-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.2fmno0j90s7z' },
@@ -17,10 +16,12 @@ const tracks = [
   { name: 'BioMed', desc: 'Investigate biomedical innovation, health technology, and research-driven discovery.', Icon: BioTechIcon, color: '#39ff14', bg: 'from-green-500/10 to-green-500/0', border: 'border-green-500/20 hover:border-green-500/60', link: 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?tab=t.i8eo6ds87x36' },
 ];
 
+const rotatingHeroWords = tracks.map((track) => track.name);
+
 const steps = [
-  { num: '01', icon: Users, title: 'Apply & Get Matched', desc: 'Complete your profile, upload your resume, and select your interest tracks. Our mentors review every application personally.' },
-  { num: '02', icon: Shield, title: 'Get Accepted', desc: 'Once accepted, you unlock your full dashboard — announcements, direct messaging, assignments, and course content.' },
-  { num: '03', icon: BookOpen, title: 'Learn & Grow', desc: 'Work through mentor-built courses, complete assignments with real feedback, and communicate directly 1-on-1.' },
+  { num: '01', title: 'Pick a track', desc: 'Read through the curriculum for whichever of the five fields you want to go deep in. Every track outline is public — no sign-up needed to see what you would be learning.' },
+  { num: '02', title: 'Get in touch', desc: 'Email us or apply for a leadership role. We will tell you what is running right now, what is still being built, and where you would fit.' },
+  { num: '03', title: 'Build something real', desc: 'Work through your track, then take the optional capstone to build a portfolio project with mentor guidance.' },
 ];
 
 const fadeUp = {
@@ -35,7 +36,6 @@ export default function Landing() {
   const { scrollY } = useScroll();
   const heroOpacity = useTransform(scrollY, [0, 400], [1, 0]);
   const heroY = useTransform(scrollY, [0, 400], [0, -60]);
-  const rotatingHeroWords = ['Tech', 'BioMed', 'Finance', 'Data Science'];
   const learnMoreUrl = 'https://docs.google.com/document/d/1k_7dCSVX2pVyJxmZFknUcg_U32ERCjQsZEkUpSLLs5E/edit?usp=sharing';
   const leadershipUrl = 'https://docs.google.com/forms/d/e/1FAIpQLSdB1B02Oo6QB8JgNVoTLlVNcxNH99-SjppRDdo03qHRmvXEyA/viewform?usp=dialog';
 
@@ -76,7 +76,7 @@ export default function Landing() {
           transition={{ duration: 0.9, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           className="text-5xl md:text-8xl font-black tracking-tight leading-[0.95] max-w-5xl"
         >
-          Learn from the
+          Build real skills in
           <div className="block min-h-[1.1em]">
             <AnimatePresence mode="wait">
               <motion.span
@@ -88,7 +88,7 @@ export default function Landing() {
                 className="block bg-gradient-to-r from-cyan-400 via-emerald-300 to-purple-500 bg-clip-text text-transparent"
                 style={{ backgroundSize: '200% 200%' }}
               >
-                best in {rotatingHeroWords[heroWordIndex]}
+                {rotatingHeroWords[heroWordIndex]}
               </motion.span>
             </AnimatePresence>
           </div>
@@ -101,9 +101,6 @@ export default function Landing() {
         >
           CyberSyntaxHub is a mentorship and skill-building program where ambitious students explore emerging technology tracks with guided support, hands-on learning, and expert feedback.
           <span className="text-foreground/60"> Real guidance. Measurable growth.</span>
-        </motion.p>
-        <motion.p className="mt-4 text-cyan-300 text-sm max-w-2xl mx-auto">
-          Join the {currentCohort} and follow cohort updates in Announcements for mentoring, reapply status, and next cohort notices.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
